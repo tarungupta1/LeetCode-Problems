@@ -12,6 +12,7 @@ The bitwise OR of an array a is equal to a[0] OR a[1] OR ... OR a[a.length - 1] 
 
 Solution
 
+APPROACH 1
 class Solution {
 public:
     int countMaxOrSubsets(vector<int>& nums) {
@@ -38,3 +39,32 @@ public:
         return count;
     }
 };
+
+
+
+APPROACH 2
+class Solution {
+    int count=0;
+    int max=0;
+    
+    public void helper(int[] nums,int index,int val){
+        if(index==nums.length){
+            if(val==max){
+                count++;
+            }
+            else if(val>max){
+                count=1;
+                max=val;
+            }
+            return;
+        }    
+        
+        helper(nums,index+1,(val | nums[index]));
+        helper(nums,index+1,val);                                
+    }
+        
+    public int countMaxOrSubsets(int[] nums) {
+        helper(nums,0,0);
+        return count;   
+    }
+}
