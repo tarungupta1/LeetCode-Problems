@@ -1,0 +1,40 @@
+Problem Number: 2044
+Problem Name: Count Number of Maximum Bitwise-OR Subsets
+Link: https://leetcode.com/problems/count-number-of-maximum-bitwise-or-subsets/
+
+Question
+Given an integer array nums, find the maximum possible bitwise OR of a subset of nums and return the number of different non-empty subsets with the maximum bitwise OR.
+An array a is a subset of an array b if a can be obtained from b by deleting some (possibly zero) elements of b. Two subsets are considered different if the indices of 
+the elements chosen are different.
+The bitwise OR of an array a is equal to a[0] OR a[1] OR ... OR a[a.length - 1] (0-indexed).
+
+
+
+Solution
+
+class Solution {
+public:
+    int countMaxOrSubsets(vector<int>& nums) {
+        
+        int a = 0;
+        for(int i=0; i<nums.size(); i++){
+            a |= nums[i];
+        }
+        
+        int count = 0;
+        for(int i=0; i<(1 << nums.size()); i++){
+            int current = 0;
+            for(int j=0; j<nums.size(); j++){
+                if(i & (1 << j)){
+                    current |= nums[j];
+                }
+            }
+            
+            if(current == a){
+                count++;
+            }
+        }
+        
+        return count;
+    }
+};
