@@ -11,15 +11,17 @@ Messages move between servers optimally, so every message takes the least amount
 messages instantly and send a reply to the originating server via the reversed path the message had gone through. 
 At the beginning of second 0, each data server sends its message to be processed. Starting from second 1, at the beginning of every second, each data server will check 
 if it has received a reply to the message it sent (including any newly arrived replies) from the master server:
-	1.  If it has not, it will resend the message periodically. The data server i will resend the message every patience[i] second(s), i.e., the data server i will resend 
-the message if patience[i] second(s) have elapsed since the last time the message was sent from this server.
+	1.  If it has not, it will resend the message periodically. The data server i will resend the message every patience[i] second(s), i.e., the data server i will 
+resend the message if patience[i] second(s) have elapsed since the last time the message was sent from this server.
 	2.  Otherwise, no more resending will occur from this server.
+	
 The network becomes idle when there are no messages passing between servers or arriving at servers.
 Return the earliest second starting from which the network becomes idle.
 
 
 Solution
 
+APPROACH 1
 class Solution {
     private class Pair{
         int node_destination, cost;
@@ -100,4 +102,73 @@ class Solution {
         
         return ans+1;   // returning when we will be free
     }    
+}
+
+
+
+APPROACH 2
+class Solution {        
+    public int networkBecomesIdle(int[][] edges, int[] patience) {
+        
+        int n = patience.length;
+        
+        int[] distance = new int[n];
+        boolean[] visited = new boolean[n];
+        
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+        
+        for(int i=0; i<edges.length; i++){
+            graph.get(edges[i][0]).add(edges[i][1]);
+            graph.get(edges[i][1]).add(edges[i][0]);
+        }
+        
+        // Breadth First Search
+        LinkedList<Integer> queue = new LinkedList<>();
+                
+        int cost = 0;
+        queue.addLast(0);
+        
+        while(queue.size() > 0){
+            int size = queue.size();
+            
+            while(size-- > 0){
+                int destination = queue.removeFirst();                
+
+                if(visited[destination] == false){
+                    distance[destination] = cost;
+                    visited[destination] = true;                    
+
+                    ArrayList<Integer> edge = graph.get(destination);
+                    for(int e : edge){
+                        if(visited[e] == false){
+                            queue.addLast(e);
+                        }
+                    }
+                }                   
+            }
+            cost++;
+        }
+        
+        
+        // finding time
+        int ans = 0;
+        for(int i=1; i<n; i++){
+            
+            int extraPayload = (distance[i]*2 - 1)/patience[i]; 
+	        /* extra number of payload before the first message arrives back to data server. 
+            Since a data server can only send messages before first message arrives back and the first message arrives after "time[i]*2". so "(time[i]*2-1)" is the 
+            interval when data server can send messages
+            */
+			
+            int lastOut = extraPayload * patience[i];   // find the last time when a data server sent a message
+            int lastIn = lastOut + distance[i]*2;   // this is the result for current data server			
+            
+            ans = Math.max(lastIn, ans);            
+        }
+        
+        return ans+1;
+    } 
 }
