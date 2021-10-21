@@ -85,9 +85,12 @@ class Solution {
             int max_time = 2 * total_distance;
             
             // if last_message_position is 0, then we will take second_last_message, else we will take the last_message_position
+	    // when the last_message_position is 0 this means a new message was going to be sent but we received the first message at that same time, therfore we will 
+	    // wait for the last message sent earlier
             if(last_message_position == 0){
                 max_time -= patience[i];
             }
+	    // when the last_message_position is not 0 this means the last_message was sent before the first message was received
             else{
                 max_time -= last_message_position;
             }
