@@ -8,6 +8,7 @@ ith piece. Alice and Bob are playing a game where they take alternating turns re
   1. Alice is only allowed to remove a piece colored 'A' if both its neighbors are also colored 'A'. She is not allowed to remove pieces that are colored 'B'.
   2. Bob is only allowed to remove a piece colored 'B' if both its neighbors are also colored 'B'. He is not allowed to remove pieces that are colored 'A'.
   3. Alice and Bob cannot remove pieces from the edge of the line.
+  
 If a player cannot make a move on their turn, that player loses and the other player wins. Assuming Alice and Bob play optimally, return true if Alice wins, or return 
 false if Bob wins.
  
