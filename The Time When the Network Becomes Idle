@@ -19,7 +19,11 @@ The network becomes idle when there are no messages passing between servers or a
 Return the earliest second starting from which the network becomes idle.
 
 
+
 Solution
+
+Time Complexity: O(((|V| + |E|).log(|V|)) + |E|) = O((|V| + |E|).log(|V|))
+Space Complexity: O(|V| + |E|)
 
 APPROACH 1
 class Solution {
@@ -105,6 +109,9 @@ class Solution {
 }
 
 
+
+Time Complexity: O(|V| + |E| + |E|) = O(|V| + |E|)
+Space Complexity: O(|V|)
 
 APPROACH 2
 class Solution {        
