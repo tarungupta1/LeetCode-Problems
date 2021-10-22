@@ -10,6 +10,9 @@ The bitwise OR of an array a is equal to a[0] OR a[1] OR ... OR a[a.length - 1] 
 
 
 
+Time Complexity: O(N.(2^N))
+Space Complexity: O(1)
+
 Solution
 
 APPROACH 1
