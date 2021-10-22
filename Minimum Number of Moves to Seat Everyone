@@ -12,6 +12,9 @@ Return the minimum number of moves required to move each student to a seat such 
 Note that there may be multiple seats or students in the same position at the beginning.
  
 
+Time Complexity: O(N.log(N) + N) = O(N.log(N))
+Space Complexity: O(1)
+
 Solution
 
 class Solution {
