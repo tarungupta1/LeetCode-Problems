@@ -13,6 +13,9 @@ If a player cannot make a move on their turn, that player loses and the other pl
 false if Bob wins.
  
 
+Time Complexity: O(N)
+Space Complexity: O(1)
+
 Solution
 
 class Solution {
