@@ -1,0 +1,99 @@
+Problem Number: 2086
+Problem Name: Minimum Number of Buckets Required to Collect Rainwater from Houses
+Link: https://leetcode.com/problems/minimum-number-of-buckets-required-to-collect-rainwater-from-houses/
+
+Question
+You are given a 0-indexed string street. Each character in street is either 'H' representing a house or '.' representing an empty space.
+You can place buckets on the empty spaces to collect rainwater that falls from the adjacent houses. The rainwater from a house at index i is collected if a bucket is 
+placed at index i - 1 and/or index i + 1. A single bucket, if placed adjacent to two houses, can collect the rainwater from both houses.
+Return the minimum number of buckets needed so that for every house, there is at least one bucket collecting rainwater from it, or -1 if it is impossible.
+
+
+Video Link: https://www.youtube.com/watch?v=LI0QLH_uvUg
+
+
+Time Complexity: O(N), where N is the length of the string
+Space Complexity: O(1)
+
+
+Solution
+
+APPROACH 1  
+
+// Modifying the string
+class Solution {
+public:
+    int minimumBuckets(string street) {
+        
+        // NOTE: It is always better to place a bucket at index i + 1 because it can collect the rainwater from the next house as well.
+
+        int ans = 0;        
+        for(int i=0; i<street.length(); i++){
+            
+            // if it a house then we will write code for it 
+            if(street[i] == 'H'){
+                
+                // if the left side has bucket, so no need to add more buckets
+                if(0 <= i-1  &&  street[i-1] == 'B'){
+                    continue;
+                }
+                // if the right side has space for bucket, we will put there
+                else if(i+1 < street.length()  &&  street[i+1] == '.'){
+                    street[i+1] = 'B';
+                    ans++;
+                }
+                // if the left side has space for bucket, we will put there
+                else if(0 <= i-1  &&  street[i-1] == '.'){
+                    street[i-1] = 'B';
+                    ans++;
+                }
+                // when both sides are filled with houses or unavailable to put buckets, then we return -1
+                else{
+                    return -1;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
+
+
+
+APPROACH 2 
+
+// Not modifying the string
+class Solution {
+public:
+    int minimumBuckets(string street) {
+        
+        // NOTE: It is always better to place a bucket at index i + 1 because it can collect the rainwater from the next house as well.
+
+        int ans = 0;        
+        for(int i=0; i<street.length(); i++){
+            
+            // if it a house then we will write code for it 
+            if(street[i] == 'H'){
+                
+                // we wont check for left side as in the code we will bypass that condition 
+                
+                // if the right side has space for bucket, we will put there
+                if(i+1 < street.length()  &&  street[i+1] == '.'){
+                    ans++;
+                    i += 2;     // this means that we dont need to check next 2 places in the street as placing a bucket will automatically solve the problem for 
+                    // the houses at (i+2) if present. Therefore, we need to check from (i+3) that too for right side.
+                }
+                // if the left side has space for bucket, we will put there
+                else if(0 <= i-1  &&  street[i-1] == '.'){
+                    ans++;            
+                }
+                // when both sides are filled with houses or unavailable to put buckets, then we return -1
+                else{
+                    return -1;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
