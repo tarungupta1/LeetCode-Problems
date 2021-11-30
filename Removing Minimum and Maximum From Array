@@ -1,0 +1,56 @@
+Problem Number: 2091
+Problem Name: Removing Minimum and Maximum From Array
+Link: https://leetcode.com/problems/removing-minimum-and-maximum-from-array/
+
+Question
+You are given a 0-indexed array of distinct integers nums.
+There is an element in nums that has the lowest value and an element that has the highest value. We call them the minimum and maximum respectively. 
+Your goal is to remove both these elements from the array.
+A deletion is defined as either removing an element from the front of the array or removing an element from the back of the array.
+Return the minimum number of deletions it would take to remove both the minimum and maximum element from the array.
+
+
+Time Complexity: O(N)
+Space Complexity: O(1)
+
+
+Solution
+
+class Solution {
+public:
+    int minimumDeletions(vector<int>& nums) {
+        
+        int min_idx = 0;
+        int max_idx = 0;
+        
+        int n = nums.size(); 
+        for(int i=0; i<n; i++){
+            if(nums[i] < nums[min_idx]){
+                min_idx = i;
+            }
+            
+            if(nums[max_idx] < nums[i]){
+                max_idx = i;
+            }                      
+        }
+        
+        // removing both from front 
+        int ans1 = max(max_idx, min_idx) + 1;
+        
+        // removing one from front and second from back
+        int ans2 = 0;
+        // if maximum element comes before smallest element
+        if(max_idx < min_idx){
+            ans2 = max_idx + 1 + n - min_idx;
+        }
+        else{
+            ans2 = min_idx + 1 + n - max_idx;
+        }
+        
+        // removing both from back 
+        int ans3 = n - min(min_idx, max_idx);
+
+        
+        return min(ans1, min(ans2, ans3));
+    }
+};
