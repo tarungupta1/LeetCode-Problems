@@ -1,0 +1,100 @@
+Problem Number: 2085
+Problem Name: Count Common Words With One Occurrence
+Link: https://leetcode.com/problems/count-common-words-with-one-occurrence/
+
+Question
+Given two string arrays words1 and words2, return the number of strings that appear exactly once in each of the two arrays.
+
+
+Time Complexity: O(N + M), where N and M are the legnth of the both the strings
+Space Complexity: O(N + M), where N and M are the legnth of the both the strings
+
+
+Solution
+
+APPROACH 1  
+
+// Two HashMaps used
+class Solution {
+public:
+    int countWords(vector<string>& words1, vector<string>& words2) {
+        
+        // two hashmaps
+        unordered_map<string, int> map1, map2;
+        
+        // using first hashmap
+        int n1 = words1.size(); 
+        for(int i=0; i<n1; i++){
+            if(map1.find(words1[i]) == map1.end()){
+                map1.insert({words1[i], 1});
+            }
+            else{
+                map1[words1[i]]++;
+            }
+        }
+        
+        // using second hashmap
+        int n2 = words2.size();
+        for(int i=0; i<n2; i++){
+            if(map2.find(words2[i]) == map2.end()){
+                map2.insert({words2[i], 1});
+            }
+            else{
+                map2[words2[i]]++;
+            }
+        }
+        
+        // checking if occurrence in both the hashmaps is 1 or not
+        int count = 0;
+        for(auto i : map1){
+            if(map1[i.first] == 1  &&  map2[i.first] == 1){
+                count++;
+            }
+        }
+        
+        return count;
+    }
+};
+
+
+
+APPROACH 2 
+
+// One HashMap used
+class Solution {
+public:
+    int countWords(vector<string>& words1, vector<string>& words2) {
+        
+        unordered_map<string, int> map1;
+        // storing the frequency of first string of words
+        int n1 = words1.size(); 
+        for(int i=0; i<n1; i++){
+            if(map1.find(words1[i]) == map1.end()){
+                map1.insert({words1[i], 1});
+            }
+            else{
+                map1[words1[i]]++;
+            }
+        }
+        
+        
+        // for second string
+        int n2 = words2.size();
+        for(int i=0; i<n2; i++){
+            // if a particular word from the first string hasn't come or has come once, then decrease the frequecy
+            if(map1[words2[i]] < 2){                
+                map1[words2[i]]--;
+            }
+        }
+        
+        // checking if occurrence of the word in the map has value '0', this means that both string of words had a word common and it's frequency was one
+        int count = 0;
+        for(auto i : map1){
+            if(map1[i.first] == 0){
+                count++;
+            }
+        }
+        
+        return count;
+    }
+};
