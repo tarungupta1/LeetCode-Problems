@@ -1,0 +1,116 @@
+Problem Number: 2087
+Problem Name: Minimum Cost Homecoming of a Robot in a Grid
+Link: https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/
+
+Question
+There is an m x n grid, where (0, 0) is the top-left cell and (m - 1, n - 1) is the bottom-right cell. You are given an integer array startPos where 
+startPos = [startrow, startcol] indicates that initially, a robot is at the cell (startrow, startcol). You are also given an integer array homePos where 
+homePos = [homerow, homecol] indicates that its home is at the cell (homerow, homecol).
+The robot needs to go to its home. It can move one cell in four directions: left, right, up, or down, and it can not move outside the boundary. Every move incurs 
+some cost. You are further given two 0-indexed integer arrays: rowCosts of length m and colCosts of length n.
+If the robot moves up or down into a cell whose row is r, then this move costs rowCosts[r].
+If the robot moves left or right into a cell whose column is c, then this move costs colCosts[c].
+Return the minimum total cost for this robot to return home.
+
+
+Solution
+
+APPROACH 1  
+
+Time Complexity: O(N + M), where N and M are row and column of the matrix
+Space Complexity: O(N + M), where N and M are row and column of the matrix
+
+// using prefix sum
+class Solution {
+    public int minCost(int[] startPos, int[] homePos, int[] rowCosts, int[] colCosts) {
+        
+        // minimum distance will be straight path row-wise and column-wise
+        
+        int[] row = new int[rowCosts.length];
+        int[] col = new int[colCosts.length];
+        
+        row[0] = rowCosts[0];
+        for(int i=1; i<rowCosts.length; i++){
+            row[i] = rowCosts[i] + row[i-1];
+        }
+        
+        col[0] = colCosts[0];
+        for(int i=1; i<colCosts.length; i++){
+            col[i] = colCosts[i] + col[i-1];
+        }
+
+        // row sum
+        int ans1 = 0;
+        if(startPos[0] <= homePos[0]){
+            ans1 = row[homePos[0]] - row[startPos[0]];
+        }
+        else{
+            if(startPos[0] != 0){
+                ans1 = row[startPos[0] - 1];                
+            }
+            if(homePos[0] != 0){
+                ans1 -= row[homePos[0] - 1];
+            }
+        }
+        
+        // column sum        
+        int ans2= 0;
+        if(startPos[1] <= homePos[1]){
+            ans2= col[homePos[1]] - col[startPos[1]];            
+        }
+        else{
+            if(startPos[1] != 0){
+                ans2= col[startPos[1] - 1];                
+            }
+            if(homePos[1] != 0){
+                ans2-= col[homePos[1] - 1];
+            }
+        }
+       
+        return (ans1 + ans2);
+    }
+}
+
+
+
+APPROACH 2
+
+Time Complexity: O(N + M), where N and M are row and column of the matrix
+Space Complexity: O(1)
+
+// traversing each element which comes in the path
+class Solution {
+    public int minCost(int[] startPos, int[] homePos, int[] rowCosts, int[] colCosts) {
+        
+        // minimum distance will be straight path row-wise and column-wise
+        
+        int ans = 0;        
+        int i = startPos[0], j = startPos[1], x = homePos[0], y = homePos[1];
+        
+        // row costs
+        while(i != x){
+            if(startPos[0] < homePos[0]){
+                i++;
+            }
+            else{
+                i--;
+            }
+            
+            ans += rowCosts[i];
+        }
+        
+        // column costs
+        while(j != y){
+            if(startPos[1] < homePos[1]){
+                j++;
+            }
+            else{
+                j--;
+            }
+            
+            ans += colCosts[j];
+        }
+        
+        return ans;
+    }
+}
