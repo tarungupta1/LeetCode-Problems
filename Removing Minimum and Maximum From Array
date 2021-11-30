@@ -34,6 +34,11 @@ public:
             }                      
         }
         
+        /* 1. We can delete both indices starting from the start of array.
+           2. We can delete both indices starting from the end of array.
+           3. We can delete one index starting from start of array and one index starting from end of array.
+        */
+        
         // removing both from front 
         int ans1 = max(max_idx, min_idx) + 1;
         
