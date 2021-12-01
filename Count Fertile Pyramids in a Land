@@ -1,0 +1,172 @@
+Problem Number: 2088
+Problem Name: Count Fertile Pyramids in a Land
+Link: https://leetcode.com/problems/count-fertile-pyramids-in-a-land/
+
+Question
+A farmer has a rectangular grid of land with m rows and n columns that can be divided into unit cells. Each cell is either fertile (represented by a 1) or 
+barren (represented by a 0). All cells outside the grid are considered barren.
+A pyramidal plot of land can be defined as a set of cells with the following criteria:
+The number of cells in the set has to be greater than 1 and all cells must be fertile.
+The apex of a pyramid is the topmost cell of the pyramid. The height of a pyramid is the number of rows it covers. Let (r, c) be the apex of the pyramid, and its 
+height be h. Then, the plot comprises of cells (i, j) where r <= i <= r + h - 1 and c - (i - r) <= j <= c + (i - r).
+An inverse pyramidal plot of land can be defined as a set of cells with similar criteria:
+The number of cells in the set has to be greater than 1 and all cells must be fertile.
+The apex of an inverse pyramid is the bottommost cell of the inverse pyramid. The height of an inverse pyramid is the number of rows it covers. Let (r, c) be the 
+apex of the pyramid, and its height be h. Then, the plot comprises of cells (i, j) where r - h + 1 <= i <= r and c - (r - i) <= j <= c + (r - i).
+Black cells indicate fertile cells.
+Given a 0-indexed m x n binary matrix grid representing the farmland, return the total number of pyramidal and inverse pyramidal plots that can be found in grid.
+
+
+Video Link: 1.  https://www.youtube.com/watch?v=bS812DRg6ds
+Editorial Link: https://leetcode.com/problems/count-fertile-pyramids-in-a-land/discuss/1598908/Simple-DP-Solution-with-Explanation-or-C%2B%2B-or-O(n-*-m)
+
+
+Solution
+
+APPROACH 1  
+
+Time Complexity: O(N * M * M), where N and M are row and column of the matrix
+Space Complexity: O(N * M), where N and M are row and column of the matrix
+
+// prefix sum 
+class Solution {
+    public int countPyramids(int[][] grid) {
+        
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] prefix_row_count = new int[n][m];
+        
+        // storing count for each row
+        for(int i=0; i<n; i++){
+            prefix_row_count[i][0] = grid[i][0];
+            for(int j=1; j<m; j++){
+                prefix_row_count[i][j] = prefix_row_count[i][j-1] + grid[i][j];
+            }
+        }
+        
+        // finding number of pyramids for each cell
+        int count = 0;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                                
+                if(grid[i][j] == 1){
+                    // we will go down and check till which length we can get the pyramid therefore we will use 3 pointers to find
+                    int left = j-1, right = j+1, bottom = i+1;
+                    while(true){
+                        // if pointers are out of the matrix we will stop there
+                        if(left < 0  ||  n <= bottom  ||  m <= right){
+                            break;
+                        }
+
+                        // checking that for a particular row, whether all the elements are fertile lands or not
+                        int last_row_elements = right - left + 1;
+                        int no_of_fertle_land = prefix_row_count[bottom][right];                
+                        if(left != 0){
+                            no_of_fertle_land -= prefix_row_count[bottom][left-1];
+                        }
+
+                        // if there are barren lands in the last row we will stop there
+                        if(last_row_elements != no_of_fertle_land){
+                            break;
+                        }
+                        
+                        // moving pointer to left, right and down 
+                        left--;
+                        right++;
+                        bottom++;
+                    }
+
+                    // counting the number of pyramids formed for a particular cell. Number of pyramids will be the (height of the biggest pyramid formed - 1)
+                    // here subtracting by 1 as we are excluding pyramid of height 1
+                    count += (bottom - i - 1);
+                }
+            }
+        }
+        
+        // finding number of inverted pyramids for each cell
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                
+                if(grid[i][j] == 1){
+                    // we will go up and check till which length we can get the inverted pyramid therefore we will use 3 pointers to find
+                    int left = j-1, right = j+1, bottom = i-1;
+                    while(true){
+                        // if pointers are out of the matrix we will stop there
+                        if(left < 0  ||  bottom < 0  ||  m <= right){
+                            break;
+                        }
+
+                        // checking that for a particular row, whether all the elements are fertile lands or not
+                        int last_row_elements = right - left + 1;
+                        int no_of_fertle_land = prefix_row_count[bottom][right];
+                        if(left != 0){
+                            no_of_fertle_land -= prefix_row_count[bottom][left-1];
+                        }
+
+                        // if there are barren lands in the last row we will stop there
+                        if(last_row_elements != no_of_fertle_land){
+                            break;
+                        }
+
+                        // moving pointer to left, right and up 
+                        left--;
+                        right++;
+                        bottom--;
+                    }
+
+          // counting the number of inverted pyramids formed for a particular cell. Number of inverted pyramids will be the (height of the biggest pyramid formed - 1) 
+          // here subtracting by 1 as we are excluding pyramid of height 1
+                    count += (i - bottom - 1);
+                }
+            }
+        }        
+        
+        return count;
+    }
+}
+
+
+
+APPROACH 2
+
+Time Complexity: O(N * M), where N and M are row and column of the matrix
+Space Complexity: O(1)
+
+// Dynamic Programming
+class Solution {
+public:
+    int count(vector<vector<int>> grid){
+        int i, j, n = grid.size(), m = grid[0].size(), ans = 0;
+        
+        // traversing all elements and find pyramids invertedly 
+        for(i = 1; i < n; i++){
+            for(j = 1; j < m - 1; j++){
+                
+                // check if current cell can be a tip of pyramid or not. which we can check by seeing whther we get two one's vertically or not
+                if(grid[i][j] && grid[i - 1][j]){ 
+                    
+                    // if its a pyramid, find the height. which can be check by taking the minimum of two pyramids left and right
+                    grid[i][j] = min(grid[i - 1][j - 1], grid[i - 1][j + 1]) + 1; 
+                    
+                    // pyramid of size n contributes n - 1 times to the answer.
+                    ans += grid[i][j] - 1;                    					
+                }
+            }
+        }
+        
+        return ans;
+    }
+    
+    
+    int countPyramids(vector<vector<int>>& grid) {
+        
+        int ans = count(grid); // this will count inverse pyramid.
+        
+        // reversing the grid row-wise
+        reverse(grid.begin(), grid.end());  
+        
+        ans += count(grid); // this will count simple pyramid.
+        
+        return ans;
+    }
+};
