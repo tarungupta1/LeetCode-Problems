@@ -1,0 +1,44 @@
+Problem Number: 2068
+Problem Name: Check Whether Two Strings are Almost Equivalent
+Link: https://leetcode.com/problems/check-whether-two-strings-are-almost-equivalent/
+
+Question
+Two strings word1 and word2 are considered almost equivalent if the differences between the frequencies of each letter from 'a' to 'z' between word1 and word2 is at most 3.
+Given two strings word1 and word2, each of length n, return true if word1 and word2 are almost equivalent, or false otherwise.
+The frequency of a letter x is the number of times it occurs in the string.
+
+
+Time Complexity: O(N + M), where N is length of word1 and M is length of word2
+Space Complexity: O(1)
+
+
+Solution
+class Solution {
+public:
+    bool checkAlmostEquivalent(string word1, string word2) {
+        
+        int *count1 = new int[26];
+        int *count2 = new int[26];
+        
+        for(int i=0; i<26; i++){
+            count1[i] = 0;
+            count2[i] = 0;
+        }
+        
+        for(int i=0; i<word1.length(); i++){
+            count1[word1[i] - 'a']++;
+        }
+        for(int i=0; i<word2.length(); i++){
+            count2[word2[i] - 'a']++;
+        }
+        
+        for(int i=0; i<26; i++){
+            int diff = abs(count1[i] - count2[i]);
+            if(diff > 3){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
