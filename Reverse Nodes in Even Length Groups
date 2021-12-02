@@ -1,0 +1,98 @@
+Problem Number: 2074
+Problem Name: Reverse Nodes in Even Length Groups
+Link: https://leetcode.com/problems/reverse-nodes-in-even-length-groups/
+
+Question
+You are given the head of a linked list.
+The nodes in the linked list are sequentially assigned to non-empty groups whose lengths form the sequence of the natural numbers (1, 2, 3, 4, ...). 
+The length of a group is the number of nodes assigned to it. In other words,
+  1. The 1st node is assigned to the first group.
+  2. The 2nd and the 3rd nodes are assigned to the second group.
+  3. The 4th, 5th, and 6th nodes are assigned to the third group, and so on.
+Note that the length of the last group may be less than or equal to 1 + the length of the second to last group.
+Reverse the nodes in each group with an even length, and return the head of the modified linked list.
+
+
+Time Complexity: O(N), where N is the number of nodes
+Space Complexity: O(1)
+
+
+Solution
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseEvenLengthGroups(ListNode* head) {
+        
+        int val = 1;    // determines the size of the groups
+        
+        // Consider the list structure ...A → (B → ... → C) → D..., where the nodes between B and C (inclusive) form a group, A is the last node of the previous group, 
+        // and D is the first node of the next group.
+        ListNode* temp = head;  // it will act as B
+        ListNode* back = head;  // it will act as A
+        
+        while(temp != NULL){
+            
+            ListNode* last = temp;   // it will act as D
+            ListNode* back2 = temp;  // it will act as C
+            
+            int count = 0;  // tells the size of group
+            
+            // traversing till we dont reach the desired size of the group or exit early
+            while(count < val  &&  last != NULL){
+                count++;
+                back2 = last;
+                last = last->next;
+            }            
+            
+            // if group length is even
+            if(count % 2 == 1){      
+                // changing old A to C
+                back = back2;
+                
+                // changing old B to D
+                temp = last;
+            }
+            // if group length is odd
+            else{
+                // reversing the group
+                ListNode* curr = temp;
+                ListNode* prev = NULL;
+                ListNode* coming = curr;
+                
+                while(curr != last){
+                    coming = curr->next;
+                    curr->next = prev;
+                    prev = curr;
+                    curr = coming;
+                }
+                
+                // connecting A with C
+                back->next = prev;
+                
+                // connecting B with D
+                temp->next = last;  
+                
+                // changing old A to B
+                back = temp;
+                
+                // changing old B to D
+                temp = last;
+            }
+                  
+            // changing the size of next group
+            val++;
+        }      
+        
+        return head;
+    }
+};
