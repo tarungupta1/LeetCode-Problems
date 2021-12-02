@@ -12,14 +12,13 @@ A subarray is a contiguous sequence of elements within an array. arr[left...righ
 right (inclusive).
 
 
-
 Editorial Link: https://leetcode.com/problems/range-frequency-queries/discuss/1589037/C%2B%2B-Simple-Solution-w-Explanation-or-Binary-Search-on-Array-of-Indices-or-One-Liner
 
 
-Time Complexity: 1. RangeFreqQuery: O(N), where N is the number of elements in arr.
-                 2. query: O(logN), where N is the number of elements in arr
+Time Complexity: 1. Total Complexity: O(N + Q*log(N)), where N is the number of elements in arr and Q is the number od queries
+                 2. RangeFreqQuery: O(N), where N is the number of elements in arr.
+                 3. query: O(logN), where N is the number of elements in arr
 Space Complexity: O(N), where N is the number of elements in arr
-
 
 
 Solution
