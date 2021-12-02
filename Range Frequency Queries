@@ -1,0 +1,51 @@
+Problem Number: 2080
+Problem Name: Range Frequency Queries
+Link: https://leetcode.com/problems/range-frequency-queries/
+
+Question
+Design a data structure to find the frequency of a given value in a given subarray.
+The frequency of a value in a subarray is the number of occurrences of that value in the subarray.
+Implement the RangeFreqQuery class:
+  1.  RangeFreqQuery(int[] arr) Constructs an instance of the class with the given 0-indexed integer array arr.
+  2.  int query(int left, int right, int value) Returns the frequency of value in the subarray arr[left...right].
+A subarray is a contiguous sequence of elements within an array. arr[left...right] denotes the subarray that contains the elements of nums between indices left and 
+right (inclusive).
+
+
+
+Editorial Link: https://leetcode.com/problems/range-frequency-queries/discuss/1589037/C%2B%2B-Simple-Solution-w-Explanation-or-Binary-Search-on-Array-of-Indices-or-One-Liner
+
+
+Time Complexity: 1. RangeFreqQuery: O(N), where N is the number of elements in arr.
+                 2. query: O(logN), where N is the number of elements in arr
+Space Complexity: O(N), where N is the number of elements in arr
+
+
+
+Solution
+
+class RangeFreqQuery {
+public:
+    
+    unordered_map<int, vector<int>> umap;
+    RangeFreqQuery(vector<int>& arr) {
+        
+        // storing indexes
+        for(int i=0; i<arr.size(); i++){
+            umap[arr[i]].push_back(i);            
+        }
+    }
+    
+    int query(int left, int right, int value) {
+        // NOTE: for a particular value in unordered map it will contain all the indexes where that value came
+        
+        // getting upper bound and lower bound index and then subtracting them.
+        return upper_bound(umap[value].begin(), umap[value].end(), right) - lower_bound(umap[value].begin(), umap[value].end(), left);
+    }
+};
+
+/**
+ * Your RangeFreqQuery object will be instantiated and called as such:
+ * RangeFreqQuery* obj = new RangeFreqQuery(arr);
+ * int param_1 = obj->query(left,right,value);
+ */
