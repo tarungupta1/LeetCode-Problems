@@ -1,0 +1,104 @@
+Problem Number: 2076
+Problem Name: Process Restricted Friend Requests
+Link: https://leetcode.com/problems/process-restricted-friend-requests/
+
+Question
+You are given an integer n indicating the number of people in a network. Each person is labeled from 0 to n - 1.
+You are also given a 0-indexed 2D integer array restrictions, where restrictions[i] = [xi, yi] means that person xi and person yi cannot become friends, either 
+directly or indirectly through other people.
+Initially, no one is friends with each other. You are given a list of friend requests as a 0-indexed 2D integer array requests, where requests[j] = [uj, vj] is a 
+friend request between person uj and person vj.
+A friend request is successful if uj and vj can be friends. Each friend request is processed in the given order (i.e., requests[j] occurs before requests[j + 1]), 
+and upon a successful request, uj and vj become direct friends for all future friend requests.
+Return a boolean array result, where each result[j] is true if the jth friend request is successful or false if it is not.
+Note: If uj and vj are already direct friends, the request is still successful.
+
+
+Editorial Link: https://leetcode.com/problems/process-restricted-friend-requests/discuss/1576912/C%2B%2B-or-Union-Find-or-Simple-Straightforward-Idea-Explained
+Video Link: https://www.youtube.com/watch?v=ePg-pEUzWAU
+
+
+Time Complexity: O(N1 * M * 1), where N1 is number of requests, M is the number of restrictions and '1' is the amortized complexity of doing "union-find operation"
+Space Complexity: O(N2), where N2 is number of people
+
+
+Solution
+
+// standard DSU template with slight modifications in par & rank
+class DSU {
+public:
+    
+    vector<int> par, rank;            // par denotes representative of a component, rank denotes size
+    
+    // DSU operations
+    
+    // initialising everything
+    void init(int n){
+		// initially all person are set as their own parents and rank of each component = 1
+        rank.resize(n);
+        par.resize(n);
+        
+        for(int i=0; i<n; i++){
+            par[i] = i;
+            rank[i] = 1;
+        }
+    }
+
+    int find(int x) {                          // find parent of a given member x
+        return par[x] == x ? x : par[x] = find(par[x]);
+    }
+
+    void Union(int x, int y) {                 // unions two component by rank
+        int xp = find(x), yp = find(y);
+        if(xp == yp) return;
+        if(rank[xp] > rank[yp]) par[yp] = par[xp], rank[xp] += rank[yp];
+        else par[xp] = par[yp], rank[yp] += rank[xp];
+    }
+};
+
+
+class Solution {
+public:
+    vector<bool> friendRequests(int n, vector<vector<int>>& restrictions, vector<vector<int>>& requests) {
+     
+        
+        DSU d;
+        d.init(n);
+        
+        
+        vector<bool> ans;
+        
+        for(auto &req : requests){
+            
+            // storing old version as if the union fails we can go back
+            vector<int> temp_par = d.par;
+            vector<int> temp_rank = d.rank;
+            
+            // applying union
+            d.Union(req[0], req[1]);
+            
+            // checking for every restriction
+            bool tag = true;
+            for(auto &res : restrictions){
+                
+                // finding their parents and comparing them
+                int xp = d.find(res[0]);
+                int yp = d.find(res[1]);
+                                
+                // if same parent then friendship not possible. Go back to old configuration 
+                if(xp == yp){
+                    tag = false;                    
+                    d.par = temp_par;
+                    d.rank = temp_rank;
+                    break;
+                }
+            }
+            
+            // add the result
+            ans.push_back(tag);
+        }
+        
+        
+        return ans;
+    }
+};
