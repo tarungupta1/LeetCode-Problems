@@ -1,0 +1,54 @@
+Problem Number: 2079
+Problem Name: Watering Plants
+Link: https://leetcode.com/problems/watering-plants/
+
+Question
+You want to water n plants in your garden with a watering can. The plants are arranged in a row and are labeled from 0 to n - 1 from left to right where the ith plant 
+is located at x = i. There is a river at x = -1 that you can refill your watering can at.
+Each plant needs a specific amount of water. You will water the plants in the following way:
+Water the plants in order from left to right.
+After watering the current plant, if you do not have enough water to completely water the next plant, return to the river to fully refill the watering can.
+You cannot refill the watering can early.
+You are initially at the river (i.e., x = -1). It takes one step to move one unit on the x-axis.
+Given a 0-indexed integer array plants of n integers, where plants[i] is the amount of water the ith plant needs, and an integer capacity representing the watering can 
+capacity, return the number of steps needed to water all the plants.
+
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(1)
+
+
+Solution
+
+class Solution {
+public:
+    int wateringPlants(vector<int>& plants, int capacity) {
+        
+        int ans = 0;
+        int n = plants.size();
+        int pos = -1;
+        int left = capacity;
+        while(pos != n-1){
+            // if next plant needs less water than the water left in the bucket, so we will move to next plant, reduce the water in the bucket and mark the plant 
+            // completely filled. Total steps moved 1
+            if(plants[pos+1] <= left){                
+                pos++;
+                left -= plants[pos];
+                plants[pos] = 0;
+                ans++;
+            }
+            // if next plant needs more water than the water left in the bucket, so we will first go and fetch water from the tap and come back with full bucket of 
+            // water and water the plant and mark it completely filled. Total steps moved will be twice the position we are at plus 1
+            else{
+                ans += (2*(pos+1) + 1);
+                pos++;
+                left = capacity - plants[pos];
+                plants[pos] = 0;
+            }
+            
+        }
+        
+        return ans;
+    }
+};
