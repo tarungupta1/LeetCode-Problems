@@ -1,0 +1,181 @@
+Problem Number: 2074
+Problem Name: Decode the Slanted Ciphertext
+Link: https://leetcode.com/problems/decode-the-slanted-ciphertext/
+
+Question
+You are given the head of a linked list.
+The nodes in the linked list are sequentially assigned to non-empty groups whose lengths form the sequence of the natural numbers (1, 2, 3, 4, ...). 
+The length of a group is the number of nodes assigned to it. In other words,
+  1. The 1st node is assigned to the first group.
+  2. The 2nd and the 3rd nodes are assigned to the second group.
+  3. The 4th, 5th, and 6th nodes are assigned to the third group, and so on.
+Note that the length of the last group may be less than or equal to 1 + the length of the second to last group.
+Reverse the nodes in each group with an even length, and return the head of the modified linked list.
+
+
+
+Editorial Link: https://leetcode.com/problems/decode-the-slanted-ciphertext/discuss/1576914/Jump-Columns-%2B-1
+
+
+Solution
+
+Time Complexity: O(N), where N is the length of the encoded string
+Space Complexity: O(N), where N is the length of the encoded string
+
+APPROACH 1
+
+class Solution {
+    public String decodeCiphertext(String encodedText, int rows) {
+        
+        int col = encodedText.length() / rows;
+        
+        // storing in an array
+        int k = 0;
+        char[][] arr = new char[rows][col];
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<col; j++){
+                arr[i][j] = encodedText.charAt(k);
+                k++;
+            }
+        }
+        
+        StringBuilder ans = new StringBuilder();
+        if(rows <= col){
+            for(int gap=0; gap<col-rows; gap++){
+                for(int i=0; i<rows; i++){
+                    int j = gap + i;
+
+                    ans.append(arr[i][j]);
+                }
+            }
+
+            int left = rows;
+            for(int gap = col - rows; gap < col; gap++){
+                for(int i=0; i<left; i++){
+                    int j = gap + i;
+                    ans.append(arr[i][j]);
+                }
+                left--;
+            }
+        }
+        else{
+            int left = col;
+            for(int gap = 0; gap < col; gap++){
+                for(int i=0; i<left; i++){
+                    int j = gap + i;
+                    ans.append(arr[i][j]);
+                }
+                left--;
+            }
+        }
+        
+        int idx = ans.length();
+        for(int i=ans.length()-1; i>=0; i--){
+            if(ans.charAt(i) == ' '){
+                idx = i;
+            }
+            else{
+                break;
+            }
+        }
+
+        return ans.toString().substring(0, idx);
+    }
+}
+
+
+
+Time Complexity: O(N), where N is the length of the encoded string
+Space Complexity: O(N), where N is the length of the encoded string
+
+APPROACH 2
+
+class Solution {
+public:
+    string decodeCiphertext(string encodedText, int rows) {
+        
+        int col = encodedText.length() / rows;
+        
+        string ans = "";
+        
+        // rows are less than column we first have to select elements that forms a parallelogram using one loop and then another loop for triangle. This means in the 
+        // first loop the number of elements in each diagonal will be same and in the next loop it will decrease by 1
+        if(rows <= col){
+            
+            // iterating till number of elements in each diagonal are same
+            for(int gap=0; gap<col-rows; gap++){
+                for(int i=0; i<rows; i++){
+                    int j = gap + i;
+
+                    ans += encodedText[((i * col) + (j))];
+                }
+            }
+
+            // iterating till number of elements in a diagonal is zero
+            int left = rows;
+            for(int gap = col - rows; gap < col; gap++){
+                for(int i=0; i<left; i++){
+                    int j = gap + i;
+                    ans += encodedText[((i * col) + (j))];
+                }
+                left--;
+            }
+        }
+        
+        // columns are less than rows we first have to select elements that forms a triangle using one loop. This means in the loop the number of elements in each 
+        // diagonal will decrease by 1
+        else{
+            // iterating till number of elements in a diagonal is zero
+            int left = col;
+            for(int gap = 0; gap < col; gap++){
+                for(int i=0; i<left; i++){
+                    int j = gap + i;
+                    ans += encodedText[((i * col) + (j))];
+                }
+                left--;
+            }
+        }
+        
+        // ans has leading spaces which we dont need therefore removing those
+        int idx = ans.length();
+        for(int i=ans.length()-1; i>=0; i--){
+            if(ans[i] == ' '){
+                idx = i;
+            }
+            else{
+                break;
+            }
+        }
+
+        // returning non leading space string
+        return ans.substr(0, idx);
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of the encoded string
+Space Complexity: O(N), where N is the length of the encoded string
+
+APPROACH 3
+
+class Solution {
+public:
+    string decodeCiphertext(string encodedText, int rows) {
+        
+        int cols = encodedText.length() / rows;
+        string ans = "";
+        
+        for(int i=0; i<cols; i++){
+            for(int j=i; j<encodedText.length(); j += (cols+1)){
+                ans += encodedText[j];
+            }
+        }
+        
+        while(ans.back() == ' '){
+            ans.pop_back();
+        }
+        
+        return ans;
+    }
+};
