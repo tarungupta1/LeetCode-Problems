@@ -1,0 +1,122 @@
+Problem Number: 2070
+Problem Name: Most Beautiful Item for Each Query
+Link: https://leetcode.com/problems/most-beautiful-item-for-each-query/
+
+Question
+You are given a 2D integer array items where items[i] = [pricei, beautyi] denotes the price and beauty of an item respectively.
+You are also given a 0-indexed integer array queries. For each queries[j], you want to determine the maximum beauty of an item whose price is less than or equal to 
+queries[j]. If no such item exists, then the answer to this query is 0.
+Return an array answer of the same length as queries where answer[j] is the answer to the jth query. 
+
+
+Editorial Link: 1. https://leetcode.com/problems/most-beautiful-item-for-each-query/discuss/1575898/C%2B%2B-Solution-or-Sorting
+                2. https://leetcode.com/problems/most-beautiful-item-for-each-query/discuss/1576065/C%2B%2B-Offline-Query
+Video Link: https://www.youtube.com/watch?v=OxIRoPFdWKs
+                                                
+                
+Solution
+
+Time Complexity: O(N(log(N)) + Q(log(Q)) + N + Q), where N and Q is number of items and queries respectively
+Space Complexity: O(Q), Q is the number of queries
+
+APPROACH 1
+
+// Sorting
+class Solution {
+public:
+    vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) {
+                    
+        // sorting all the items
+        sort(items.begin(), items.end());        
+        
+        
+        // sorting all the queries but before that we need to save the queries position
+        vector<pair<int, int>> queriesPair;
+        for(int i=0; i<queries.size(); i++){
+            queriesPair.push_back({queries[i], i});
+        }
+        // sorting
+        sort(queriesPair.begin(), queriesPair.end());
+        
+        
+        // finding maxBeauty for all queries
+        int maxBeauty = 0;
+        int itemIndex=0;
+        vector<int> ans(queries.size());
+        
+        for(int j=0; j<queriesPair.size(); j++){  
+            
+            int maxPriceAllowed = queriesPair[j].first;
+            int queryOriginalIndex = queriesPair[j].second;
+            
+            // will iterate till we dont reach the item having higher price than the query or we have findshed all the items
+            while(itemIndex < items.size()  &&  items[itemIndex][0] <= maxPriceAllowed){
+                // finding the maximum beauty
+                maxBeauty = max(maxBeauty, items[itemIndex][1]);
+                itemIndex++;
+            }
+    
+            ans[queryOriginalIndex] = maxBeauty;
+        }
+        
+        return ans;
+    }
+};
+
+
+
+Time Complexity: O(Q(log(N))), where N and Q is number of items and queries respectively
+Space Complexity: O(1)
+
+APPROACH 2
+
+// Binary Search and Sorting
+class Solution {
+public:
+    vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) {
+                    
+        // sorting all the items
+        sort(items.begin(), items.end());        
+        
+        // finding the max beauty till a particular index
+        int maxBeauty = 0;
+        for(int i=0; i<items.size(); i++){
+            maxBeauty = max(maxBeauty, items[i][1]);
+            items[i][1] = maxBeauty;                           
+        }
+        
+        
+        // finding maxBeauty for all queries        
+        vector<int> ans;        
+        for(int j=0; j<queries.size(); j++){  
+            
+            // applying binary search to find the max beauty
+            int low = 0, high = (int)(items.size()) - 1;
+            
+            int profit = -1;
+            while(low <= high){
+                int mid = (high - low)/2 + low;
+                
+                // if item's price is smaller than or equal to query price, we should move towards right side
+                if(items[mid][0] <= queries[j]){
+                    low = mid+1;
+                    profit = mid;
+                }
+                // if item's price is bigger than query price, we should move towards left side
+                else{
+                    high = mid-1;
+                }
+            }
+            
+            // if query price is smaller than all the items' price
+            if(profit == -1){
+                ans.push_back(0);
+            }
+            else{
+                ans.push_back(items[profit][1]);
+            }
+        }
+        
+        return ans;
+    }
+};
