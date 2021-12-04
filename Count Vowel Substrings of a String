@@ -1,0 +1,65 @@
+Problem Number: 2062
+Problem Name: Count Vowel Substrings of a String
+Link: https://leetcode.com/problems/count-vowel-substrings-of-a-string/
+
+Question
+A substring is a contiguous (non-empty) sequence of characters within a string.
+A vowel substring is a substring that only consists of vowels ('a', 'e', 'i', 'o', and 'u') and has all five vowels present in it.
+Given a string word, return the number of vowel substrings in word.
+
+                
+Time Complexity: O(N^2), where N is the length of the string
+Space Complexity: O(1)
+
+
+Solution
+
+class Solution {
+public:
+    int countVowelSubstrings(string word) {
+        
+        int n = word.length();
+        int count = 0;
+        // checking for every substring for different lengths
+        for (int len = 5; len<=n; len++){   
+            // for a particular length, checking all the substrings formed
+            for (int i = 0; i<= n-len; i++){            
+                int j = i + len - 1;           
+                
+                // check if any consonant is present or not
+                bool tag = false;                
+                // check if all five vowels are present or not
+                bool tag1 = false, tag2 = false, tag3 = false, tag4 = false, tag5 = false;
+                 
+                for (int k = i; k <= j; k++){
+                    if(word[k] == 'a'){
+                        tag1 = true;
+                    }
+                    else if(word[k] == 'e'){
+                        tag2 = true;
+                    }
+                    else if(word[k] == 'i'){
+                        tag3 = true;
+                    }
+                    else if(word[k] == 'o'){
+                        tag4 = true;
+                    }
+                    else if(word[k] == 'u'){
+                        tag5 = true;
+                    }
+                    else{
+                        tag = true;
+                        break;
+                    }
+                }
+                             
+                // if substring consists of only vowels and all vowels, then increement the count
+                if((tag == false)  &&  ((tag1 && tag2  &&  tag3 &&  tag4 && tag5) == true)){
+                    count++;
+                }
+            }                       
+        }
+                
+        return count;
+    }
+};
