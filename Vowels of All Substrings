@@ -1,0 +1,93 @@
+Problem Number: 2063
+Problem Name: Vowels of All Substrings
+Link: https://leetcode.com/problems/vowels-of-all-substrings/
+
+Question
+Given a string word, return the sum of the number of vowels ('a', 'e', 'i', 'o', and 'u') in every substring of word.
+A substring is a contiguous (non-empty) sequence of characters within a string.
+Note: Due to the large constraints, the answer may not fit in a signed 32-bit integer. Please be careful during the calculations.
+
+
+Editorial Link: https://leetcode.com/problems/vowels-of-all-substrings/discuss/1564075/Detailed-explanation-of-why-(len-pos)-*-(pos-%2B-1)-works
+Video Link: https://www.youtube.com/watch?v=DvdZwV4h9tY
+
+
+Solution
+
+Time Complexity: O(N), where N is the length of the string
+Space Complexity: O(1)
+
+APPROACH 1
+
+class Solution {
+public:
+    
+    bool isVowel(char ch){
+        if(ch == 'a'  ||  ch == 'e'  ||  ch == 'i'  ||  ch == 'o'  ||  ch == 'u'){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    long long countVowels(string word) {
+        
+        long long int ans = 0;
+        
+        for(int i=0; i<word.length(); i++){
+            if(isVowel(word[i])){
+                // if vowel, then choices to select first character is (i+1) and second character is (N-i). Therefore total = (i+1)*(N-i)
+                ans += (long long int)(i + 1) * (long long int)(word.length() - i);
+            }
+        }
+        
+        return ans;
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of the string
+Space Complexity: O(N), where N is the length of the string
+
+APPROACH 2
+
+class Solution {
+public:
+    
+    bool isVowel(char ch){
+        if(ch == 'a'  ||  ch == 'e'  ||  ch == 'i'  ||  ch == 'o'  ||  ch == 'u'){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    long long countVowels(string word) {
+        
+        long long int ans = 0;
+        
+        long long int last_vowel_count = 0;
+        for(int i=(int)(word.length()) - 1; i>=0; i--){
+            if(isVowel(word[i])){
+                // ans for a particular vowel = (all strings starting from the vowel to indexes after that) + (strings which will be made by this vowel will have 
+                // other vowels, therfore counting their frequency too)
+                long long int num = (word.length() - i) + last_vowel_count;
+                ans += num;
+                
+                // changing the count of vowels formed
+                last_vowel_count = num;
+            }
+            else{
+                // ans for a particular consonant = (0 as we have to count consonant) + (strings which will be made by this consonant will have other vowels, 
+                // therfore counting their frequency too)
+                long long int num = (0) + last_vowel_count;
+                ans += num;
+            }
+        }
+        
+        return ans;
+    }
+};
