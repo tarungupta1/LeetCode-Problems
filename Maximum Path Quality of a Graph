@@ -1,0 +1,81 @@
+Problem Number: 2065
+Problem Name: Maximum Path Quality of a Graph
+Link: https://leetcode.com/problems/maximum-path-quality-of-a-graph/
+
+Question
+There is an undirected graph with n nodes numbered from 0 to n - 1 (inclusive). You are given a 0-indexed integer array values where values[i] is the value of the 
+ith node. You are also given a 0-indexed 2D integer array edges, where each edges[j] = [uj, vj, timej] indicates that there is an undirected edge between the nodes 
+uj and vj, and it takes timej seconds to travel between the two nodes. Finally, you are given an integer maxTime.
+A valid path in the graph is any path that starts at node 0, ends at node 0, and takes at most maxTime seconds to complete. You may visit the same node multiple times. 
+The quality of a valid path is the sum of the values of the unique nodes visited in the path (each node's value is added at most once to the sum).
+Return the maximum quality of a valid path.
+Note: There are at most four edges connected to each node.
+
+
+
+Video Link: https://www.youtube.com/watch?v=CFrOURaQHDY
+
+
+Time Complexity: O(4^10) == O(10^6) (Since 10 <= timej, maxTime <= 100, the path at most have 10 edges. Since each node at most has 4 edges, the maximum number 
+                 of possible paths is 4^10 ~= 1e6, so a brute force DFS should work.
+Space Complexity: O(V + E), where V and E are the vertices and edges of the graph
+
+
+Solution
+
+class Solution {
+public:
+    
+    // stores the max ans
+    int ans = 0;
+    
+    // DFS function
+    void dfs(vector<int>& values, vector<vector<pair<int, int>>>& graph, int edge, int current_sum, int current_time, int maxTime){
+                
+        // when total time crosses max time, therefore invalid path
+        if(current_time > maxTime){
+            return ;
+        }
+        
+        // when we reach a node then adding it's value
+        current_sum += values[edge];
+        
+        // if the node is vertex 0, so we have come back to our original position
+        if(edge == 0){
+            ans = max(ans, current_sum);
+        }
+        
+        // as we have visited this node, it's value will be for a particular DFS
+        int temp = values[edge];
+        values[edge] = 0;
+        
+        // applying DFS to all neighbours of a node
+        for(auto neighbour : graph[edge]){
+            // changing the node and adding time taken to reach the neighbour
+            dfs(values, graph, neighbour.first, current_sum, current_time + neighbour.second, maxTime);
+        }
+        
+        // after visiting the noe, we will put back it's original value
+        values[edge] = temp;
+        return ;
+    }
+    
+    
+    int maximalPathQuality(vector<int>& values, vector<vector<int>>& edges, int maxTime) {
+        
+        int n = values.size();
+        vector<vector<pair<int, int>>> graph(n);
+        
+        // creating a graph
+        for(auto e : edges){
+            graph[e[0]].push_back({e[1], e[2]});
+            graph[e[1]].push_back({e[0], e[2]});      
+        }
+        
+        // applying DFS from vertex 0
+        dfs(values, graph, 0, 0, 0, maxTime);
+        
+        
+        return ans;
+    }
+};
