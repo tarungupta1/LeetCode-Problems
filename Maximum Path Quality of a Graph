@@ -16,7 +16,7 @@ Note: There are at most four edges connected to each node.
 Video Link: https://www.youtube.com/watch?v=CFrOURaQHDY
 
 
-Time Complexity: O(4^10) == O(10^6) (Since 10 <= timej, maxTime <= 100, the path at most have 10 edges. Since each node at most has 4 edges, the maximum number 
+Time Complexity: O(4^10) == O(10^6)     Since 10 <= timej, maxTime <= 100, the path at most have 10 edges. Since each node at most has 4 edges, the maximum number 
                  of possible paths is 4^10 ~= 1e6, so a brute force DFS should work.
 Space Complexity: O(V + E), where V and E are the vertices and edges of the graph
 
