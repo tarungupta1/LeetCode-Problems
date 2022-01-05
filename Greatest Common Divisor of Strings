@@ -1,0 +1,107 @@
+Problem Number: 1071
+Problem Name: Greatest Common Divisor of Strings
+Link: https://leetcode.com/problems/greatest-common-divisor-of-strings/
+
+Question
+For two strings s and t, we say "t divides s" if and only if s = t + ... + t (i.e., t is concatenated with itself one or more times).
+Given two strings str1 and str2, return the largest string x such that x divides both str1 and str2.
+
+
+Video Link: https://www.youtube.com/watch?v=dEKZx0uAep8
+
+
+Solution 
+
+Time Complexity: O(N), where N is number of elements in the array
+Space Complexity: O(1)
+
+APPROACH 1
+class Solution {
+public:
+    string gcdOfStrings(string str1, string str2) {
+                
+        if(str1.length() > str2.length()){
+            swap(str1, str2);
+        }
+        
+        // will create a subtring and check whole string, and decide whether it is repeating or not. So we will take the substring length equals to smallest string 
+        // length. Then check, if we get the substring repeating we will return the substring, else we will decrease teh substring length and then check. We will 
+        // check till our substring is not empty
+        for(int k = str2.length(); k>=1; k--){
+            
+            // if substring's length isn't a multiple of both the strings' length, so it is not the answer
+            if(str1.length() % k != 0  ||  str2.length() % k != 0){
+                continue;
+            }
+            
+            // getting the substring
+            string str = str2.substr(0, k);
+            
+            // cheking the first string
+            bool tag = false;            
+            for(int i=0; i<str1.length(); i += k){
+                
+                if(str1.substr(i, k) != str){
+                    tag = true;
+                    break;
+                }
+            }
+            
+            // when substring can't divide first string
+            if(tag == true){
+                continue;
+            }
+            
+            
+            // cheking the first string
+            tag = false;            
+            for(int i=0; i<str2.length(); i += k){
+                
+                if(str2.substr(i, k) != str){
+                    tag = true;
+                    break;
+                }
+            }
+            
+            // when substring can't divide second string
+            if(tag == true){
+                continue;
+            }
+            
+            // both passes, then return
+            return str;            
+        }
+        
+        // no substring divides both the strings
+        return "";
+    }
+};
+
+
+
+Time Complexity: O(log(min(A, B))), where A and B is the length of both strings
+Space Complexity: O(1)
+
+APRROACH 2
+class Solution {    
+/*
+if there exists a valid gcd (length > 0), for each input string the gcd will repeat throughout the entire string. therefore it must also repeat throughout the entire 
+concatenation of both strings. since it repeats through the entirety of the concatenation, the order of the concatenation must not matter. take examples
+            ABCABC + ABC == ABC + ABCABC
+            ABCDEF + ABC != ABC + ABCDEF
+
+once it is established that there is a valid gcd, the number of characters to repeat will be the gcd of the lengths
+*/
+    
+    public String gcdOfStrings(String str1, String str2) {
+        if (!(str1+str2).equals(str2+str1))  return "";
+
+        int gcdVal = gcd(str1.length() , str2.length());
+        return str2.substring(0, gcdVal);
+    }
+
+    public static int gcd(int p, int q) {
+        if (q == 0) return p;
+        else return gcd(q, p % q);
+    }
+}
