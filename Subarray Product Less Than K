@@ -1,0 +1,49 @@
+Problem Number: 713
+Problem Name: Subarray Product Less Than K
+Link: https://leetcode.com/problems/subarray-product-less-than-k/
+
+Question
+Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.
+
+
+Editorial Link: https://www.geeksforgeeks.org/number-subarrays-product-less-k/
+
+
+Time Complexity: O(N), where N is number of elements in the array
+Space Complexity: O(1)
+
+Solution
+class Solution {
+public:
+    int numSubarrayProductLessThanK(vector<int>& nums, int k) {
+        
+      // as all numbers in the array are greater than than 0, their product's range is [1, infinity) which won't fulfill the condition where product is less than 1, 
+      // so returning 0
+        if(k <= 1){
+            return 0;            
+        }
+                
+        int ans = 0;    // stores the number of subarrays
+        
+        // stores product of numbers from left pointer to right pointer
+        long long int pro = 1;
+        
+        // using sliding window, we will check number of subarrays made when a right element is introduced in the sliding window
+        for(int left = 0, right = 0; right < nums.size(); right++){
+            
+            // adding right element in the window
+            pro *= nums[right];
+            
+            // positioning the left pointer, so that the product is less than k
+            while(pro >= k){
+                pro /= nums[left];
+                left++;
+            }
+            
+            // adding the number of subarrays formed by introducing the right element i.e. length of the sliding window
+            ans += (right - left + 1);
+        }
+        
+        return ans;
+    }
+};
