@@ -1,0 +1,68 @@
+Problem Number: 2047
+Problem Name: Number of Valid Words in a Sentence
+Link: https://leetcode.com/problems/number-of-valid-words-in-a-sentence/
+
+Question
+A sentence consists of lowercase letters ('a' to 'z'), digits ('0' to '9'), hyphens ('-'), punctuation marks ('!', '.', and ','), and spaces (' ') only. Each sentence 
+can be broken down into one or more tokens separated by one or more spaces ' '.
+A token is a valid word if all three of the following are true:
+  1. It only contains lowercase letters, hyphens, and/or punctuation (no digits).
+  2. There is at most one hyphen '-'. If present, it must be surrounded by lowercase characters ("a-b" is valid, but "-ab" and "ab-" are not valid).
+  3. There is at most one punctuation mark. If present, it must be at the end of the token ("ab,", "cd!", and "." are valid, but "a!b" and "c.," are not valid).
+
+Examples of valid words include "a-b.", "afad", "ba-c", "a!", and "!".
+Given a string sentence, return the number of valid words in sentence.
+
+
+Time Complexity: O(N), where N is length of the string
+Space Complexity: O(1)
+
+
+Solution 
+class Solution {
+    public int countValidWords(String sentence) {
+        
+        int ans = 0;        
+        String[] words = sentence.split(" ");
+        
+        for(int j=0; j<words.length; j++){            
+            String word = words[j];
+            
+            boolean num = false;
+            int hyphen = 0, punctuation = 0;
+            int hyphen_posi = -1, punctuation_posi = -1;
+            
+            for(int i=0; i<word.length(); i++){
+                if('0' <= word.charAt(i)  &&  word.charAt(i) <= '9'){
+                    num = true;
+                }
+                else if(word.charAt(i) == '!'  ||  word.charAt(i) == '.'  ||  word.charAt(i) == ','){
+                    punctuation++;
+                    punctuation_posi = i;
+                }
+                else if(word.charAt(i) == '-'){
+                    hyphen++;
+                    hyphen_posi = i;
+                }
+            }
+            
+            if(num == true  ||  punctuation > 1  ||  hyphen > 1){
+                continue;
+            }
+            else if(hyphen_posi == 0  ||  hyphen_posi == word.length()-1){
+                continue;
+            }
+            else if(0 <= punctuation_posi  &&  punctuation_posi < word.length()-1){
+                continue;
+            }
+            else if(hyphen_posi == -1){
+                ans++;                
+            }
+            else if('a' <= word.charAt(hyphen_posi-1)  &&  word.charAt(hyphen_posi-1) <= 'z'  &&  'a' <= word.charAt(hyphen_posi+1)  &&  word.charAt(hyphen_posi+1) <= 'z'){
+                ans++;
+            }
+        }
+        
+        return ans;
+    }
+}
