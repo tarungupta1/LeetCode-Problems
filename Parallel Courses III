@@ -1,0 +1,196 @@
+Problem Number: 2050
+Problem Name: Parallel Courses III
+Link: https://leetcode.com/problems/parallel-courses-iii/
+
+Question
+You are given an integer n, which indicates that there are n courses labeled from 1 to n. You are also given a 2D integer array relations 
+where relations[j] = [prevCoursej, nextCoursej] denotes that course prevCoursej has to be completed before course nextCoursej (prerequisite relationship). 
+Furthermore, you are given a 0-indexed integer array time where time[i] denotes how many months it takes to complete the (i+1)th course.
+You must find the minimum number of months needed to complete all the courses following these rules:
+  1. You may start taking a course at any time if the prerequisites are met.
+  2. Any number of courses can be taken at the same time.
+  
+Return the minimum number of months needed to complete all the courses.
+Note: The test cases are generated such that it is possible to complete every course (i.e., the graph is a directed acyclic graph).
+
+
+Editorial Link: https://leetcode.com/problems/parallel-courses-iii/discuss/1537481/C%2B%2B-Topological-Sort-(Kahn's-Algorithm-BFS)
+
+
+Solution 
+
+Time Complexity: O((V + E) * log(V + E)), where V is total number of courses and E is total number of edges between the courses. Here log(E + V) as we are using priority queue
+Space Complexity: O(V), where V is total number of courses
+
+
+APPROACH 1
+// using TOPOLOGICAL SORT
+class Solution {
+    
+    class Pair implements Comparable<Pair>{
+        int node, time;
+        
+        Pair(int x, int y){
+            time = x;
+            node = y;
+        }
+        
+        public int compareTo(Pair o){
+            return this.time - o.time;
+        }
+    }
+    
+    public int minimumTime(int n, int[][] relations, int[] time) {
+        
+        // When all the courses necessary for a particular course are completed then we can start the particular course. This thing is seen in topological sort. 
+        
+        // creating a graph
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<=n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+                
+        // creating indegree and initialising the graph
+        int[] indegree = new int[n+1];
+        for(int i=0; i<relations.length; i++){
+            indegree[relations[i][1]]++;
+            graph.get(relations[i][0]).add(relations[i][1]);
+        }
+        
+        
+        // using priority queue to pick course which will be finished early
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        
+        // adding courses which need no prerequisite courses for completion
+        for(int i=1; i<=n; i++){
+            if(indegree[i] == 0){
+                pq.add(new Pair(time[i-1], i));
+            }
+        }
+        
+        // stores the time to complete the course
+        int[] ans = new int[n+1];
+        
+        // applying topological sort
+        /*  here we are using priority queue. A course named C1 is available to be studied, when all the prerequisite courses named(X1, X2, X3, .. Xn) are completed. 
+            So the time taken to start the course C1 will be the time the last course Xn took for completion. So when we will completing all the prerequisite 
+            courses X1, X2, X3, .. Xn, we dont need to find max time for the course C1 to complete everytime. The priority queue will complete prerequisite courses 
+            with increasing order of completion time. Thereby reducing one step.               
+        */
+        
+        while(pq.size() > 0){
+            Pair rem = pq.poll();
+            ans[rem.node] = rem.time;
+            
+            // traversing all the courses
+            for(int nbr : graph.get(rem.node)){
+                // decreasing the conditions for further courses
+                indegree[nbr]--;
+                
+                // if all the conditions for the courses are met we will add it in the priority queue, with the time it will take to complete which is equal to the 
+                // sum of (time to complete that course) and (time taken to complete the course's necessary courses)
+                if(indegree[nbr] == 0){
+                    pq.add(new Pair(time[nbr-1] + rem.time, nbr));
+                }
+            }
+        }
+        
+        // finding time taken to complete all courses, therefore taking max
+        int max_ans = 0;
+        for(int i=1; i<=n; i++){
+            max_ans = Math.max(max_ans, ans[i]);
+        }
+        
+        return max_ans;
+    }
+}
+
+
+
+Time Complexity: O((V + E)), where V is total number of courses and E is total number of edges between the courses. Here log(E + V) as we are using priority queue
+Space Complexity: O(V), where V is total number of courses and E is total number of edges between the courses.
+
+
+APPROACH 2
+// using TOPOLOGICAL SORT
+class Solution {
+    
+    class Pair{
+        int node, time;
+
+        Pair(int x, int y){
+            node = x;
+            time = y;
+        }
+    }
+
+    public int minimumTime(int n, int[][] relations, int[] time) {
+        
+        // here we will use topological sort
+        // when all the courses necessary for a particular course are completed then we can start the particular course. This thing is seen in topological sort
+        
+        // creating a graph
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<=n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+                
+        // creating indegree and initialising the graph
+        int[] indegree = new int[n+1];
+        for(int i=0; i<relations.length; i++){
+            indegree[relations[i][1]]++;
+            graph.get(relations[i][0]).add(relations[i][1]);
+        }
+        
+        
+        // using queue to pick course which will be finished early
+        LinkedList<Pair> queue = new LinkedList<>();
+        
+        // adding courses which need no prerequisite courses for completion. Queue stores the node name and the time required to compltet the prerequisites
+        for(int i=1; i<=n; i++){
+            if(indegree[i] == 0){
+                queue.addLast(new Pair(i, 0));  // for no prerequisite courses there is no time required for them to wait
+            }
+        }
+        
+        // stores the time to complete the course
+        int[] ans = new int[n+1];
+        
+        // applying topological sort
+        /*  here we are using queue. A course named C1 is available to be studied, when all the prerequisite courses named(X1, X2, X3, .. Xn) are completed. So the 
+            time taken to start the course C1 will be the time the last course Xn took for completion. So when we will completing all the prerequisite 
+            courses X1, X2, X3, .. Xn, we will check which course takes most time to complete and that will be the start time for the course C1. Therefore we will find 
+            max time for the course C1 everytime. 
+        */
+        
+        while(queue.size() > 0){
+            Pair rem = queue.removeFirst();
+            
+            // total time = time to complete all prerequisite courses + time to process this course
+            ans[rem.node] = rem.time + time[rem.node - 1];
+            
+            
+            // traversing all the courses
+            for(int nbr : graph.get(rem.node)){
+                // checking whether this prerequisite course takes more time to complete than other prerequisite courses
+                ans[nbr] = Math.max(ans[nbr], ans[rem.node]);
+                
+                // decreasing the conditions for further courses
+                indegree[nbr]--;
+                
+                // if all the conditions for the courses are met we will add it in the queue   
+                if(indegree[nbr] == 0){
+                    queue.add(new Pair(nbr, ans[nbr]));
+                }
+            }
+        }
+        
+        // finding time taken to complete all courses, therefore taking max
+        int max_ans = 0;
+        for(int i=1; i<=n; i++){
+            max_ans = Math.max(max_ans, ans[i]);
+        }
+        
+        return max_ans;
+    }
+}
