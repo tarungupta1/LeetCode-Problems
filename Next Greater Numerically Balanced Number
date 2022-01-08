@@ -1,0 +1,47 @@
+Problem Number: 2048
+Problem Name: Next Greater Numerically Balanced Number
+Link: https://leetcode.com/problems/next-greater-numerically-balanced-number/
+
+Question
+An integer x is numerically balanced if for every digit d in the number x, there are exactly d occurrences of that digit in x.
+Given an integer n, return the smallest numerically balanced number strictly greater than n.
+ 
+
+Time Complexity: O(N * log(N)), where N is total number of numbers we will check. Here log(N) as we are counting the digits of a number.
+Space Complexity: O(1)
+
+
+Solution 
+
+// Brute force approach 
+class Solution {
+    public int nextBeautifulNumber(int n) {
+        
+        int num = n+1;
+        while(true){
+            
+            // checking every number whether it satisfies the condition or not
+            int[] arr = new int[10];
+            
+            int temp = num; 
+            while(temp > 0){
+                arr[temp%10]++;
+                temp /= 10;                
+            }
+            
+            boolean tag = true;
+            for(int i=0; i<10; i++){
+                if(arr[i] != 0  &&  arr[i] != i){
+                    tag = false;
+                    break;
+                }
+            }
+            
+            if(tag == true){
+                return num;
+            }
+            
+            num++;
+        }
+    }
+}
