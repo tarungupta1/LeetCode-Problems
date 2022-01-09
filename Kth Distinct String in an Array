@@ -9,7 +9,7 @@ Note that the strings are considered in the order in which they appear in the ar
 
 
 
-Time Complexity: O(N), where N is the total number of strings
+Time Complexity: O(N * log(N)), where N is the total number of strings
 Space Complexity: O(N * |S|), where N is the total number of strings and |S| is the length of the string
 
 
