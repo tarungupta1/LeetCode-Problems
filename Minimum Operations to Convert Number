@@ -1,0 +1,182 @@
+Problem Number: 2059
+Problem Name: Minimum Operations to Convert Number
+Link: https://leetcode.com/problems/minimum-operations-to-convert-number/
+
+Question
+You are given a 0-indexed integer array nums containing distinct numbers, an integer start, and an integer goal. There is an integer x that is initially set to start, 
+and you want to perform operations on x such that it is converted to goal. You can perform the following operation repeatedly on the number x:
+If 0 <= x <= 1000, then for any index i in the array (0 <= i < nums.length), you can set x to any of the following:
+  1. x + nums[i]
+  2. x - nums[i]
+  3. x ^ nums[i] (bitwise-XOR)
+  
+Note that you can use each nums[i] any number of times in any order. Operations that set x to be out of the range 0 <= x <= 1000 are valid, but no more operations 
+can be done afterward.
+Return the minimum number of operations needed to convert x = start into goal, and -1 if it is not possible.
+
+
+Video Link: https://www.youtube.com/watch?v=r_GCX5jalWM
+
+
+Solution
+
+Time Complexity: O(N * K), where N is the length of array and K is the range from [0, 1000]. Every number will to generate numbers from [0, 1000]
+Space Complexity: O(K), where K is the range from [0, 1000].
+
+
+APPROACH 1
+// BRUTE FORCE APPROACH which is basically Breadth First Search
+// checking all permutation of operations between number and symbols. Returning whenever we find the answer
+class Solution {
+    public int minimumOperations(int[] nums, int start, int goal) {
+        
+        // will store outputs of the operations. Will help in telling whether we have achieved this number in past or not. If achieved we wont do operations on it 
+        // again and if not achieved we will do operations on it.
+        HashSet<Integer> set = new HashSet<>();
+        
+        // stores the output of the operations
+        ArrayList<Integer> answers = new ArrayList<>();
+        answers.add(start);
+        
+        int count = 0;  // stores the minimum number of operations we need to perform        
+        while(true){
+            count++;
+            int size = answers.size();
+            
+            // stores the output of the operations
+            ArrayList<Integer> temp = new ArrayList<>();
+            
+            // will do all the operations with the values we have found in the previous operation
+            for(int i=0; i<nums.length; i++){
+                
+                // XOR operation
+                for(int j=0; j<size; j++){
+                    int num = answers.get(j) ^ nums[i];
+                    if(num == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= num  &&  num <= 1000  &&  set.contains(num) == false){
+                            temp.add(num);
+                            set.add(num);
+                        }
+                    }                    
+                }
+                
+                // ADD operation
+                for(int j=0; j<size; j++){
+                    int num = answers.get(j) + nums[i];
+                    if(num == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= num  &&  num <= 1000  &&  set.contains(num) == false){
+                            temp.add(num);
+                            set.add(num);
+                        }
+                    }                    
+                }
+                
+                // SUBTRACT operation
+                for(int j=0; j<size; j++){
+                    int num = answers.get(j) - nums[i];
+                    if(num == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= num  &&  num <= 1000  &&  set.contains(num) == false){
+                            temp.add(num);
+                            set.add(num);
+                        }
+                    }                    
+                }
+            }   
+            
+            // if in this operation there is no new output possible, this means we cant reach the destination 
+            if(temp.size() == 0){
+                return -1;
+            }
+            
+            // storing the current outputs to be used for next operation
+            answers = temp;
+        }
+    }
+}
+
+
+
+Time Complexity: O(N * K), where N is the length of array and K is the range from [0, 1000]. Every number will to generate numbers from [0, 1000]
+Space Complexity: O(K), where K is the range from [0, 1000].
+
+
+APPROACH 2
+// BRUTE FORCE APPROACH which is basically Breadth First Search
+// checking all permutation of operations between number and symbols. Returning whenever we find the answer
+class Solution {
+    public int minimumOperations(int[] nums, int start, int goal) {
+        
+        int n = nums.length;
+        
+        
+        // will store outputs of the operations. Will help in telling whether we have achieved this number in past or not. If achieved we wont do operations on it again 
+        // and if not achieved we will do operations on it.
+        HashSet<Integer> set = new HashSet<>();
+        
+        // stores the output of the operations
+        LinkedList<Integer> queue = new LinkedList<>();
+        queue.addFirst(start);
+        
+        int count = 0;  // stores the minimum number of operations we need to perform        
+        while(queue.size() > 0){
+            count++;
+            int size = queue.size();
+                        
+            // will do all the operations with the values we have found in the previous operation
+            while(size -- > 0){
+                int input = queue.remove();
+                
+                for(int i=0; i<n; i++){
+                    // XOR operation                
+                    int output1 = input ^ nums[i];
+                    if(output1 == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= output1  &&  output1 <= 1000  &&  set.contains(output1) == false){
+                            queue.addLast(output1);
+                            set.add(output1);
+                        }
+                    }                    
+                    
+                    // ADD operation
+                    int output2 = input + nums[i];
+                    if(output2 == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= output2  &&  output2 <= 1000  &&  set.contains(output2) == false){
+                            queue.addLast(output2);
+                            set.add(output2);
+                        }
+                    }                    
+
+                    // SUBTRACT operation
+                    int output3 = input - nums[i];
+                    if(output3 == goal){
+                        return count;
+                    }
+                    else{
+                        if(0 <= output3  &&  output3 <= 1000  &&  set.contains(output3) == false){
+                            queue.addLast(output3);
+                            set.add(output3);
+                        }
+                    }                   
+                }                                               
+            }                           
+        }
+        
+        
+        // if we cant reach the goal after doing evry possible operation, this means we cant reach the destination             
+        return -1;            
+    }
+}
