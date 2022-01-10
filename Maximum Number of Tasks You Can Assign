@@ -1,0 +1,84 @@
+Problem Number: 2071
+Problem Name: Maximum Number of Tasks You Can Assign
+Link: https://leetcode.com/problems/maximum-number-of-tasks-you-can-assign/
+
+Question
+You have n tasks and m workers. Each task has a strength requirement stored in a 0-indexed integer array tasks, with the ith task requiring tasks[i] strength 
+to complete. The strength of each worker is stored in a 0-indexed integer array workers, with the jth worker having workers[j] strength. Each worker can only be 
+assigned to a single task and must have a strength greater than or equal to the task's strength requirement (i.e., workers[j] >= tasks[i]).
+Additionally, you have pills magical pills that will increase a worker's strength by strength. You can decide which workers receive the magical pills, however, you 
+may only give each worker at most one magical pill.
+Given the 0-indexed integer arrays tasks and workers and the integers pills and strength, return the maximum number of tasks that can be completed.
+
+
+Editorial Link: https://leetcode.com/problems/maximum-number-of-tasks-you-can-assign/discuss/1575887/C%2B%2B-or-Binary-Search-%2B-Intuitive-Greedy-Idea-or-Detailed-Explanation-%2B-Comments
+
+
+Time Complexity: O(log(min(N, M)) * M * log(N)), where N is total number of tasks and M is the total number of workers
+Space Complexity: O(M), where M is the total number of workers
+
+
+Solution 
+class Solution {
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int p, int strength) {
+        int n = tasks.size(), m = workers.size();
+        
+        // Sorting the tasks and workers in increasing order
+        sort(tasks.begin(), tasks.end());
+        sort(workers.begin(), workers.end());
+        int lo = 0, hi = min(m, n);
+        int ans;
+        
+        while(lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            int count = 0;
+            bool flag = true;
+            
+            // Inserting all workers in a multiset
+            multiset<int> st(workers.begin(), workers.end());
+            
+            // Checking if the mid smallest tasks can be assigned
+            for(int i = mid - 1; i >= 0; i--) {
+                
+                // Case 1: Trying to assing to a worker without the pill
+                auto it = prev(st.end());
+                if(tasks[i] <= *it) {
+                    
+                    // Case 1 satisfied!
+                    st.erase(it);
+                } else {
+                    
+                    // Case 2: Trying to assign to a worker with the pill
+                    auto it = st.lower_bound(tasks[i] - strength);
+                    if(it != st.end()) {
+                        
+                        // Case 2 satisfied!
+                        count++;
+                        st.erase(it);
+                    } else {
+                        
+                        // Case 3: Impossible to assign mid tasks
+                        flag = false;
+                        break;
+                    }
+                }
+                
+                // If at any moment, the number of pills require for mid tasks exceeds 
+                // the allotted number of pills, we stop the loop
+                if(count > p) {
+                    flag = false;
+                    break;
+                }
+            }
+            
+            if(flag) {
+                ans = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
