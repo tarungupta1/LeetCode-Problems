@@ -1,0 +1,80 @@
+Problem Number: 2058
+Problem Name: Find the Minimum and Maximum Number of Nodes Between Critical Points
+Link: https://leetcode.com/problems/find-the-minimum-and-maximum-number-of-nodes-between-critical-points/
+
+Question
+A critical point in a linked list is defined as either a local maxima or a local minima.
+A node is a local maxima if the current node has a value strictly greater than the previous node and the next node.
+A node is a local minima if the current node has a value strictly smaller than the previous node and the next node.
+Note that a node can only be a local maxima/minima if there exists both a previous node and a next node.
+Given a linked list head, return an array of length 2 containing [minDistance, maxDistance] where minDistance is the minimum distance between any two distinct 
+critical points and maxDistance is the maximum distance between any two distinct critical points. If there are fewer than two critical points, return [-1, -1].
+
+
+Time Complexity: O(N), where N is the length of the linked list
+Space Complexity: O(1)
+
+
+Solution
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> nodesBetweenCriticalPoints(ListNode* head) {
+        
+        ListNode* back = head;
+        ListNode* temp = head->next;
+        
+        int firstCrititalPoint = -1;
+        int prevCriticalPoint = -1;
+        
+        int minDist = INT_MAX, maxDist = INT_MIN;
+        
+        int idx = 0;
+        while(temp->next != NULL){
+            
+            if((back->val < temp->val  &&   temp->next->val < temp->val)  ||  (back->val > temp->val  &&   temp->next->val > temp->val)){
+                
+                if(firstCrititalPoint == -1){
+                    firstCrititalPoint = idx;
+                }
+                
+                // finding minimum number of nodes between two critical points
+                if(prevCriticalPoint != -1){                    
+                    minDist = min(minDist, idx - prevCriticalPoint);
+                }
+                
+                prevCriticalPoint = idx;
+            }
+            
+            idx++;
+            back = back->next;
+            temp = temp->next;
+        }
+        
+        // max will be when critical points are at extreme ends from list of critical points
+        maxDist = prevCriticalPoint - firstCrititalPoint;
+        
+        
+        vector<int> ans(2);
+        // if more than one critical points are there, print the max and min diff
+        if(minDist != INT_MAX){
+            ans[0] = minDist;
+            ans[1] = maxDist;
+        }
+        // if one or no critical points are there, then print -1
+        else{
+            ans[0] = ans[1] = -1;
+        }
+        
+        return ans;
+    }
+};
