@@ -1,0 +1,145 @@
+Problem Number: 2055
+Problem Name: Plates Between Candles
+Link: https://leetcode.com/problems/plates-between-candles/
+
+Question
+There is a long table with a line of plates and candles arranged on top of it. You are given a 0-indexed string s consisting of characters '*' and '|' only, 
+where a '*' represents a plate and a '|' represents a candle.
+You are also given a 0-indexed 2D integer array queries where queries[i] = [lefti, righti] denotes the substring s[lefti...righti] (inclusive). For each query, 
+you need to find the number of plates between candles that are in the substring. A plate is considered between candles if there is at least one candle to its left 
+and at least one candle to its right in the substring.
+  1. For example, s = "||**||**|*", and a query [3, 8] denotes the substring "*||**|". The number of plates between candles in this substring is 2, as each of the two plates 
+  has at least one candle in the substring to its left and right.
+Return an integer array answer where answer[i] is the answer to the ith query.
+
+
+Video Link: 1. https://youtu.be/Nhvf_hmDa6I?t=4285 (APPROACH 1)
+            2. https://youtu.be/Nhvf_hmDa6I?t=5257 (APPROACH 2)
+
+
+
+Solution 
+
+Time Complexity: O(N + (Q * log(N)), where N is total number of plates and candles and Q is the total number of queries
+Space Complexity: O(N + Q), where N is total number of plates and candles and q is the Total number of queries
+
+
+APPROACH 1
+// using Binary search
+class Solution {
+public:
+    
+    vector<int> platesBetweenCandles(string s, vector<vector<int>>& queries) {
+        
+        int n = s.length();
+        
+        // storing all the indexes where we can find the candles
+        vector<int> candles;
+        for(int i=0; i<n; i++){
+            if(s[i] == '|'){
+                candles.push_back(i);
+            }
+        }
+        
+        // stores the answer for each query
+        vector<int> ans;
+        
+        // for every query we will find the left candle which comes on or after left index and right candle which comes before or on the right index
+        for(int i=0; i<queries.size(); i++){
+            // finds candle which comes after the left index
+            int start = lower_bound(candles.begin(), candles.end(), queries[i][0]) - candles.begin();
+            
+            // finds candle which comes before the right index
+            int end = upper_bound(candles.begin(), candles.end(), queries[i][1]) - candles.begin() - 1;
+            
+            // if both pointers are crossing each other thus no plates can be stored
+            if(start >= end){
+                ans.push_back(0);
+            }
+            // we have found two candles which may have some plates stored
+            else{
+                // no of plates will be equal to number of positions between both candles minus number of candles that are there between left and right candles
+                int count = candles[end] - candles[start] - 1 - (end - start - 1);
+                ans.push_back(count);
+            }
+        }
+        
+        return ans;
+    }
+};
+
+
+
+Time Complexity: O(N + Q), where N is total number of plates and candles and Q is the total number of queries
+Space Complexity: O(N + Q), where N is total number of plates and candles and Q is the total number of queries
+
+
+APPROACH 2
+// using prefix sum
+class Solution {
+public:
+    
+    vector<int> platesBetweenCandles(string s, vector<vector<int>>& queries) {
+        
+        int n = s.length();
+        
+        // storing the nearest candle which is in left
+        vector<int> nearestLeftCandle(n);        
+        int candle = -1;        
+        for(int i=0; i<n; i++){            
+            if(s[i] == '|'){
+                candle = i;
+            }
+            nearestLeftCandle[i] = candle;            
+        }
+        
+        // storing the nearest candle which is in right
+        vector<int> nearestRightCandle(n);
+        candle = n;        
+        for(int i=n-1; i>=0; i--){            
+            if(s[i] == '|'){
+                candle = i;
+            }
+            nearestRightCandle[i] = candle;            
+        }
+        
+        // stores number of plates till now
+        int count = 0;
+        vector<int> prefixCandleCount(n);
+        for(int i=0; i<n; i++){
+            if(s[i] == '*'){
+                count++;
+            }            
+            prefixCandleCount[i] = count;
+        }
+        
+        
+        // stores the answer for each query
+        vector<int> ans;
+        
+        // for every query we will find the left candle which comes on or after left index and right candle which comes before or on the right index
+        for(int i=0; i<queries.size(); i++){
+            
+            // finds candle which comes after the left index
+            int start = nearestRightCandle[queries[i][0]];
+            
+            // finds candle which comes before the right index
+            int end = nearestLeftCandle[queries[i][1]];
+                        
+            
+            // if both pointers are crossing each other or no candles are there thus no plates can be stored
+            if(start == -1  ||  end  == n  ||  start > end){
+                ans.push_back(0);
+            }
+            // we have found two candles which may have some plates stored
+            else{
+                // no of plates will be equal to number of positions between both candles minus number of plates between both the candles
+                int count = prefixCandleCount[end] - prefixCandleCount[start];
+                
+                ans.push_back(count);
+            }
+        }
+        
+        return ans;
+    }
+};
