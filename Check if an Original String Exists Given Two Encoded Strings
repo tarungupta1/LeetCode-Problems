@@ -1,0 +1,132 @@
+Problem Number: 2060
+Problem Name: Check if an Original String Exists Given Two Encoded Strings
+Link: https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/
+
+Question
+An original string, consisting of lowercase English letters, can be encoded by the following steps:
+  1. Arbitrarily split it into a sequence of some number of non-empty substrings.
+  2. Arbitrarily choose some elements (possibly none) of the sequence, and replace each with its length (as a numeric string).
+  3. 1Concatenate the sequence as the encoded string.
+
+For example, one way to encode an original string "abcdefghijklmnop" might be:
+  1. Split it as a sequence: ["ab", "cdefghijklmn", "o", "p"].
+  2. Choose the second and third elements to be replaced by their lengths, respectively. The sequence becomes ["ab", "12", "1", "p"].
+  3. Concatenate the elements of the sequence to get the encoded string: "ab121p".
+
+Given two encoded strings s1 and s2, consisting of lowercase English letters and digits 1-9 (inclusive), return true if there exists an original string that could be 
+encoded as both s1 and s2. Otherwise, return false.
+Note: The test cases are generated such that the number of consecutive digits in s1 and s2 does not exceed 3.
+
+
+
+Editorial Link: https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/discuss/1551731/DFS
+
+
+Time Complexity: O(N * M * 2000), where N is the length of string 1 and M is the length of string 2. we will be mulitplying 2000 (reason stated above)
+Space Complexity: O(N * M * 2000), where N is the length of string 1 and M is the length of string 2. we will be mulitplying 2000 (reason stated above)
+
+
+Solution
+/**
+    *  s1 = "abc123ad"
+              i
+    *  s2 = "bc12de"
+                 j
+       1. Why 2000 options ?
+       Since max 3 digits can be place, 999
+       so difference b/w i and j can be -999 to 999 == 2000
+       since i can be -999 and j can be 999 so diff == 2000
+       
+       What is diff ?
+       This tell diff in index b/w i and j
+       Suppose
+       s1 = 'aaaaaaaabbbbccccc'
+                i=4
+       s2 = 'bbbbbbbaaaaaaaaaaaaaadddddddddd'
+                             j=16
+            diff =  16 - 4 = 12
+            diff > 0, j > i 
+            diff < 0, i > j
+            Since digit are introduced in b/w, we have to take all possible digit/numbers that can be formed this means
+            s1 = 'aaa123bb'
+                     i
+                     val= 1, 12, 123
+                       val = 2, 23
+                         val=3
+                         all possible no. that can be formed
+                    suppose val = 12.
+                    so new i = i + val
+                       new i = 3 + 12 = 15
+                   aaa(12 character)(3character)bb
+                                 
+                   
+            s2 = 'ab12c'
+                   j=1
+                   diff = j - i, 1 - 15 = -14
+                   -ve means i > j
+                   
+       2. Basic is to check index value at i and j
+      case 1. if both at i and j, are character and diff != 0, it means both i and j are at different positions
+      case 2. if both are digit
+      case 3. if both are character diff == 0, both are at same position, move to i+1, j+1
+      case 4. if one character, one digit is there
+*/
+
+class Solution {
+    public boolean possiblyEquals(String s1, String s2) {
+        int l1 = s1.length();
+        int l2 = s2.length();
+        
+        // dp[i][j][diff] means if s1[i:] truncated by <diff> characters if diff > 0 
+        // and s2[j:] truncated by <-diff> characters if diff < 0 are equal
+        Boolean[][][] dp = new Boolean[l1 + 1][l2 + 1][2000]; 
+        return dfs(0, 0, 0, s1.toCharArray(), s2.toCharArray(), dp);
+    }
+    
+    private boolean dfs(int i, int j, int diff, char[] s1, char[] s2, Boolean[][][] dp) {
+        if (i == s1.length && j == s2.length) {
+            return diff == 0;
+        }
+        
+        if (dp[i][j][diff + 1000] != null) return dp[i][j][diff + 1000];
+        
+        // Literal matching on s1[i] and s2[j]
+        if (i < s1.length && j < s2.length && diff == 0 && s1[i] == s2[j]) {
+            if (dfs(i + 1, j + 1, 0, s1, s2, dp)) {
+                return dp[i][j][1000] = true;
+            }
+        }
+        
+        // Literal matching on s1[i]
+        if (i < s1.length && !isDigit(s1[i]) && diff > 0 && dfs(i + 1, j, diff - 1, s1, s2, dp)) {
+            return dp[i][j][diff + 1000] = true;
+        }
+        
+        // Literal matching on s2[j]
+        if (j < s2.length && !isDigit(s2[j]) && diff < 0 && dfs(i, j + 1, diff + 1, s1, s2, dp)) {
+            return dp[i][j][diff + 1000] = true;
+        }
+        
+        // Wildcard matching on s1[i]
+        for (int k = i, val = 0; k < s1.length && isDigit(s1[k]); ++k) {
+            val = val * 10 + (s1[k] - '0');
+            if (dfs(k + 1, j, diff - val, s1, s2, dp)) {
+                return dp[i][j][diff + 1000] = true;
+            }
+        }
+        
+        // Wildcard matching on s2[j]
+        for (int k = j, val = 0; k < s2.length && isDigit(s2[k]); ++k) {
+            val = val * 10 + (s2[k] - '0');
+            if (dfs(i, k + 1, diff + val, s1, s2, dp)) {
+                return dp[i][j][diff + 1000] = true;
+            }
+        }
+        
+        return dp[i][j][diff + 1000] = false;
+    }
+    
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+}
