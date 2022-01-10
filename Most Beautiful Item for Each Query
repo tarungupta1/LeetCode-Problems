@@ -65,7 +65,7 @@ public:
 
 
 
-Time Complexity: O(Q(log(N))), where N and Q is number of items and queries respectively
+Time Complexity: O(N(log(N)) + Q(log(N))), where N and Q is number of items and queries respectively
 Space Complexity: O(1)
 
 APPROACH 2
