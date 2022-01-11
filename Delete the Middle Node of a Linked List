@@ -1,0 +1,119 @@
+Problem Number: 2095
+Problem Name: Delete the Middle Node of a Linked List
+Link: https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+
+Question
+You are given the head of a linked list. Delete the middle node, and return the head of the modified linked list.
+The middle node of a linked list of size n is the ⌊n / 2⌋th node from the start using 0-based indexing, where ⌊x⌋ denotes the largest integer less than or equal to x.
+  ->  For n = 1, 2, 3, 4, and 5, the middle nodes are 0, 1, 1, 2, and 2, respectively.
+
+
+Solution
+
+
+Time Complexity: O(N), where N is the length of the linked list
+Space Complexity: O(1)
+
+
+APPROACH 1
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteMiddle(ListNode* head) {
+        
+        // one pass to find the length of the linked list
+        int size = 0;
+        ListNode *temp = head;
+        for(; temp != NULL;){
+            temp = temp->next;
+            size++;
+        }
+        
+        // edge case when length of LL is 1
+        if(size == 1){
+            return NULL;
+        }
+        
+        // second pass when we will delete the middle element
+        int i=0; 
+        temp = head;
+        while(i+1 != (size/2)){
+            i++;
+            temp = temp->next;
+        }
+        
+        temp->next = temp->next->next;
+        
+        return head;
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of Linked List
+Space Complexity: O(1)
+
+
+APPROACH 2
+// Using 3 pointers
+class Solution {
+    public ListNode deleteMiddle(ListNode head) {
+    
+        ListNode slow = head;
+        ListNode fast = head;
+        ListNode prev = null;
+        
+        while(fast != null  &&  fast.next != null){
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        // when there is only one node in the linked list, so we will return null
+        if(prev == null){
+            return prev;
+        }
+        
+        // when there are more than one node in the linked list
+        prev.next = slow.next;        
+        
+        return head;
+    }
+}
+
+ 
+ 
+Time Complexity: O(N), where N is the length of Linked List
+Space Complexity: O(1)
+
+
+APPROACH 3
+// Using 2 pointers
+class Solution {
+    public ListNode deleteMiddle(ListNode head) {
+    
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;        
+        
+        ListNode slow = dummy;
+        ListNode fast = dummy;
+        
+        while(fast.next != null  &&  fast.next.next != null){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        slow.next = slow.next.next;
+        
+        return dummy.next;
+    }
+} 
