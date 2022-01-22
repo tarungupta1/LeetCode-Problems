@@ -1,0 +1,138 @@
+Problem Number: 2045
+Problem Name: Second Minimum Time to Reach Destination
+Link: https://leetcode.com/problems/second-minimum-time-to-reach-destination/
+
+Question
+A city is represented as a bi-directional connected graph with n vertices where each vertex is labeled from 1 to n (inclusive). The edges in the graph are represented as 
+a 2D integer array edges, where each edges[i] = [ui, vi] denotes a bi-directional edge between vertex ui and vertex vi. Every vertex pair is connected by at most one edge, 
+and no vertex has an edge to itself. The time taken to traverse any edge is time minutes.
+Each vertex has a traffic signal which changes its color from green to red and vice versa every change minutes. All signals change at the same time. You can enter a vertex 
+at any time, but can leave a vertex only when the signal is green. You cannot wait at a vertex if the signal is green.
+The second minimum value is defined as the smallest value strictly larger than the minimum value.
+  ->  For example the second minimum value of [2, 3, 4] is 3, and the second minimum value of [2, 2, 4] is 4.
+Given n, edges, time, and change, return the second minimum time it will take to go from vertex 1 to vertex n.
+
+Notes:
+  ->  You can go through any vertex any number of times, including 1 and n.
+  ->  You can assume that when the journey starts, all signals have just turned green.
+ 
+
+Editorial Link: 1. https://leetcode.com/problems/second-minimum-time-to-reach-destination/discuss/1525251/JAVA-Easy-BFS-with-detailed-comments.-TO(N%2BM)-SO(N%2BM)
+
+
+Time Complexity: O(N + M), where N is total number of nodes and E is the total number of roads
+Space Complexity: O(N + M), where N is total number of nodes and E is the total number of roads
+
+
+
+Solution 
+/*
+If it was needed to find the minimum time to reach vertex n from vertex 1, we would have done a simple BFS and stored the minimum time to reach each vertex. 
+Here we need to find the second minimum time, so basically, we need to reach each vertex at most twice and store the minimum and second minimum time to reach every vertex. 
+	
+Note: second minimum time should be strictly greater than the minimum time. We can apply the same BFS with modification that we reach every vertex for the second time 
+and the second arriving time should be strictly greater than the first arriving time.
+
+Also, since change and time are same we dont need dijkstra algorithm to find the cecond smallest, therefore reducing the time complexity by using queue
+*/
+class Solution {
+        
+    public class Pair{
+        int node, time;
+        
+        Pair(int x, int y){
+            node = x;
+            time = y;
+        }                
+    }
+
+    public int secondMinimum(int n, int[][] edges, int time, int change) {
+        
+        // creating the graph
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<=n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+        
+        // initialising the graph
+        for(int i=0; i<edges.length; i++){
+            graph.get(edges[i][0]).add(edges[i][1]);
+            graph.get(edges[i][1]).add(edges[i][0]);
+        }
+        
+        // will store minimum distance to reach this node. For a particular node first element will store minimum time and second element will store second minimum 
+        // time to reach that element
+        long[][] distance = new long[n+1][2];
+        // initialising with infinity
+        for(int i=0; i<=n; i++){
+            Arrays.fill(distance[i], Integer.MAX_VALUE);
+        }
+        
+        // will be used for BFS traversal
+        LinkedList<Pair> queue = new LinkedList<>();
+        queue.add(new Pair(1, 0));
+        distance[1][0] = 0;
+        
+        while(queue.size() > 0){
+            Pair rem = queue.remove();
+            
+            /*
+                Calculation for the arriving time to the adjacent vertex: We have reached the current vertex p.idx at time p.val. Now, we need to find out the current 
+                state of the traffic light. 
+                
+                Number of changes in traffic light = (p.val/change).
+                If number of changes is odd, starting from green, then the current state will be red and vice versa.
+                
+                If the current state is red, we need to wait for it to become green (another change) to leave the vertex. So, waiting time = change- (p.val % change);
+                  
+                If the current state is green, we can instantly leave the vertex, So, waiting time=0.
+            */            
+            // time to reach next node
+            int next_Time = 0;
+            
+            // will check whether there is red light or not and this finding the waiting time plus time to reach that node
+            if((rem.time/change) % 2 == 1){
+                /* when there is a red light, then we will add the time it needs to wait
+                -> 1. formulae: waiting time = (change - time it was red before the car came)
+                                            OR
+                -> 2. formulae: time taken to reach that node + waiting time = (((rem.time / change) + 1) * change)   [TRY TO VISUALISE]
+                */
+                
+                int waiting_time = (change - (rem.time % change));
+                next_Time += rem.time + waiting_time;
+                // next_Time += (((rem.time / change) + 1) * change); 
+            }
+            else{
+                // when there is a green light, then no waiting time
+                next_Time = rem.time;
+            }
+            
+            // adding travelling time to reach neighbouring node
+            next_Time += time;
+            
+            // traversing all neighbouring nodes
+            for(int nbr : graph.get(rem.node)){
+                
+                // arriving for the first time 
+                if(distance[nbr][0] == Integer.MAX_VALUE){
+                    distance[nbr][0] = next_Time;
+                    queue.add(new Pair(nbr, next_Time));
+                }
+                // arriving for the second time such that the arriving time is strictly greater than the first arriving time
+                else if(distance[nbr][0] < next_Time  &&  distance[nbr][1] == Integer.MAX_VALUE){
+                    
+                    //if we have arrived last node twicfe then return the arriving time
+                    if(nbr == n){
+                        return next_Time;
+                    }
+                    
+                    // arriving to other nodes second time
+                    distance[nbr][1] = next_Time;                    
+                    queue.add(new Pair(nbr, next_Time));
+                }
+            }
+        }
+        
+        return -1;
+    }
+}
