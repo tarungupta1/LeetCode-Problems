@@ -1,0 +1,115 @@
+Problem Number: 2040
+Problem Name: Kth Smallest Product of Two Sorted Arrays
+Link: https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/
+
+Question
+Given two sorted 0-indexed integer arrays nums1 and nums2 as well as an integer k, return the kth (1-based) smallest product of nums1[i] * nums2[j] 
+where 0 <= i < nums1.length and 0 <= j < nums2.length.
+ 
+
+Editorial Link: 1. https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/discuss/1527753/Binary-Search-and-Two-Pointers
+                2. https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/discuss/1524856/Binary-search-with-detailed-explanation
+                3. https://www.geeksforgeeks.org/kth-smallest-number-in-array-formed-by-product-of-any-two-elements-from-two-arrays/
+
+
+Time Complexity: O((N + M) * log(10^10)), where N is the length of first vector and M is the length of second vector
+Space Complexity: O(N + M), where N is the length of first vector and M is the length of second vector
+
+
+
+Solution 
+class Solution {
+public:
+    
+    // find the total number of products less than "Mid" value between two vectors
+    // Using 2 pointer approach
+    long long int count_products(vector<int> &a, vector<int> &b, long long int mid){
+        
+        long long int total = 0;
+        
+        int i=0, j = b.size() - 1;
+        for(; i<a.size(); i++){
+            
+            while(j >= 0  &&  (long long int)(a[i]) * (long long int)(b[j]) > mid){
+                j--;
+            }
+            
+            total += (j + 1);
+        }      
+
+        return total;    
+    }
+    
+    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k) {
+        
+        // dividing the vector into positive and negative vector
+        vector<int> pos1, pos2, neg1, neg2;
+        for(int i=0; i<nums1.size(); i++){
+            if(nums1[i] < 0){
+                neg1.push_back(nums1[i]);
+            }
+            else{
+                pos1.push_back(nums1[i]);
+            }
+        }        
+        for(int i=0; i<nums2.size(); i++){
+            if(nums2[i] < 0){
+                neg2.push_back(nums2[i]);
+            }
+            else{
+                pos2.push_back(nums2[i]);
+            }
+        }
+        
+        // dividing the vector into positive and negative vector in reverse order
+        vector<int> pos1_rev, pos2_rev, neg1_rev, neg2_rev;
+        for(int i=nums1.size()-1; i>=0; i--){
+            if(nums1[i] < 0){
+                neg1_rev.push_back(nums1[i]);
+            }
+            else{
+                pos1_rev.push_back(nums1[i]);
+            }
+        }        
+        for(int i=nums2.size()-1; i>=0; i--){
+            if(nums2[i] < 0){
+                neg2_rev.push_back(nums2[i]);
+            }
+            else{
+                pos2_rev.push_back(nums2[i]);
+            }
+        }
+        
+        
+        // applying binary search
+        long long int low = -10000000000, high = 10000000000;        
+        while(low < high){
+            long long mid = (high - low)/2 + low;
+            long long int ans = 0;
+            
+            // Using IF condition, it is reducing the time complexity
+            
+            // if product "mid" is negative, then we only need to check negative * positive products
+            if(mid < 0){
+                ans = count_products(pos2_rev, neg1, mid) + count_products(pos1_rev, neg2, mid);
+            }
+            // if prodcut "mid" is positive, then we have to check positive * positive products plus negative * negative products. We will add negative products by 
+            // multiplying their sizes
+            else{
+                ans = count_products(neg1_rev, neg2_rev, mid) + count_products(pos1, pos2, mid) + (neg1.size() * pos2.size()) + (neg2.size() * pos1.size());
+            }
+
+            // if total number products comes out to be lesser than the desired one, we have to search for a higher product
+            if(ans < k){
+                low = mid + 1;
+            }
+            // if total number products comes out to be greater than or equal to the desired one, we have to search for a lower product
+            else{
+                high = mid;
+            }
+        }
+        
+        // returning the optimal answer
+        return low;
+    }
+};
