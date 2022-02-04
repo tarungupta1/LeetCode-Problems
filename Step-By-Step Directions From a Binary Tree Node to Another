@@ -10,17 +10,173 @@ letters 'L', 'R', and 'U'. Each letter indicates a specific direction:
   -> 'L' means to go from a node to its left child node.
   -> 'R' means to go from a node to its right child node.
   -> 'U' means to go from a node to its parent node.
-Return the step-by-step directions of the shortest path from node s to node t.
   
-
-Editorial Link: 1. https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/discuss/1527753/Binary-Search-and-Two-Pointers
-                2. https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/discuss/1524856/Binary-search-with-detailed-explanation
-                3. https://www.geeksforgeeks.org/kth-smallest-number-in-array-formed-by-product-of-any-two-elements-from-two-arrays/
+Return the step-by-step directions of the shortest path from node s to node t.
 
 
-Time Complexity: O((N + M) * log(10^10)), where N is the length of first vector and M is the length of second vector
-Space Complexity: O(N + M), where N is the length of first vector and M is the length of second vector
+Editorial Link: https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/discuss/1613071/Idea-Explained-oror-LCA-Tree-Traversal-and-Backtracking-oror-C%2B%2B-Clean-Code
+
+
+Solution
+
+Time Complexity: O(N), where N is the number of nodes in the tree
+Space Complexity: O(N), where N is the number of nodes in the tree
+
+
+APPROACH 1
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    
+    public ArrayList<TreeNode> traversal(TreeNode root, int val){
+        
+        if(root == null){
+            return new ArrayList<TreeNode>();
+        }
+        
+        if(root.val == val){
+            ArrayList<TreeNode> al = new ArrayList<TreeNode>();
+            al.add(root);
+            return al;
+        }
+        
+        ArrayList<TreeNode> left = traversal(root.left, val);
+        if(left.size() != 0){
+            left.add(root);
+            return left;
+        }
+        
+        ArrayList<TreeNode> right = traversal(root.right, val);
+        if(right.size() != 0){
+            right.add(root);
+            return right;
+        }
+        else{
+            return new ArrayList<TreeNode>();
+        }
+    }
+    
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        
+        ArrayList<TreeNode> one = traversal(root, startValue);
+        ArrayList<TreeNode> two = traversal(root, destValue);
+        
+        int s = one.size() - 1;
+        int t = two.size() - 1;
+        
+        while(s >= 0  &&  t >= 0  &&  one.get(s) == two.get(t)){
+            s--;
+            t--;            
+        }
+        
+        s++;
+        t++;
+        
+        StringBuilder ans = new StringBuilder();
+        for(int temp = 0; temp != s; temp++){
+            ans.append("U");
+        }
+        
+        while(t > 0){
+            TreeNode node = two.get(t);
+            
+            if(node.left == two.get(t-1)){
+                ans.append("L");
+            }
+            else{
+                ans.append("R");
+            }
+            
+            t--;
+        }
+        
+        return ans.toString();
+    }
+}
 
 
 
-Solution 
+Time Complexity: O(N), where N is the number of nodes in the tree
+Space Complexity: O(N), where N is the number of nodes in the tree
+
+
+APPROACH 2
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    
+    public boolean traversal(TreeNode root, int val, StringBuilder sb){
+        
+        if(root.val == val){
+            return true;
+        }
+        
+        if(root.left != null  &&  traversal(root.left, val, sb)){
+            sb.append("L");
+            return true;
+        }
+        else if(root.right != null  &&  traversal(root.right, val, sb)){
+            sb.append("R");
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        
+        StringBuilder one = new StringBuilder();
+        traversal(root, startValue, one);
+        
+        StringBuilder two = new StringBuilder();
+        traversal(root, destValue, two);
+
+        
+        int s = one.length() - 1;
+        int t = two.length() - 1;
+        
+        while(s >= 0  &&  t >= 0  &&  one.charAt(s) == two.charAt(t)){
+            s--;
+            t--;            
+        }
+        
+        StringBuilder ans = new StringBuilder();
+        for(int temp = 0; temp <= s; temp++){
+            ans.append("U");
+        }
+        
+        while(t >= 0){
+            ans.append(two.charAt(t));
+            t--;
+        }
+        
+        return ans.toString();
+    }
+}
