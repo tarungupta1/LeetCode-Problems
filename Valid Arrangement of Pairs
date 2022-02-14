@@ -88,6 +88,7 @@ class Solution {
         // traversing all neighbours
         while(map.containsKey(node) == true  &&  map.get(node).size() > 0){
             // storing the neighbour and then removing it so that it is not available in further DFS
+            // we are removing from end of the arraylist. We can also remove from starting but the time complexity increases.
             int nbr = map.get(node).get(map.get(node).size() - 1);
             map.get(node).remove(map.get(node).size() - 1);
             
