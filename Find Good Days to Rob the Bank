@@ -1,0 +1,75 @@
+Problem Number: 2100
+Problem Name: Find Good Days to Rob the Bank
+Link: https://leetcode.com/problems/find-good-days-to-rob-the-bank/
+
+Question
+You and a gang of thieves are planning on robbing a bank. You are given a 0-indexed integer array security, where security[i] is the number of guards on duty on 
+the ith day. The days are numbered starting from 0. You are also given an integer time.
+The ith day is a good day to rob the bank if:
+  ->  There are at least time days before and after the ith day,
+  ->  The number of guards at the bank for the time days before i are non-increasing, and
+  ->  The number of guards at the bank for the time days after i are non-decreasing.
+  
+More formally, this means day i is a good day to rob the bank if and only if 
+        security[i - time] >= security[i - time + 1] >= ... >= security[i] <= ... <= security[i + time - 1] <= security[i + time].
+
+Return a list of all days (0-indexed) that are good days to rob the bank. The order that the days are returned in does not matter.
+                
+                
+                
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of array
+
+
+Solution
+class Solution {
+public:
+    vector<int> goodDaysToRobBank(vector<int>& security, int time) {
+        
+    /*
+        arr ->   5,3,3,3,5,6,2
+        pre ->   0 1 2 3 0 0 1 
+        suf ->   0 4 3 2 1 0 0 
+    */
+        
+        int n = security.size();
+        
+        
+        // stores the number of days where the number of guards are greater than today. Here days will be before today
+        int* pre = new int[n];
+        pre[0] = 0;
+        for(int i=1; i<n; i++){
+            if(security[i-1] >= security[i]){
+                pre[i] = pre[i-1] + 1;
+            }
+            else{
+                pre[i] = 0;
+            }
+        }
+        
+        
+        // stores the number of days where the number of guards are greater than today. Here days will be after today
+        int* suf = new int[n];
+        suf[n-1] = 0;
+        for(int i=n-2; i>=0; i--){
+            if(security[i+1] >= security[i]){
+                suf[i] = suf[i+1] + 1;
+            }
+            else{
+                suf[i] = 0;
+            }
+        }
+        
+        
+        // checking whether the number of days where the number of guards are greater than today
+        vector<int> ans;
+        for(int i=0; i<n; i++){
+            if(pre[i] >= time  &&  suf[i] >= time){
+                ans.push_back(i);
+            }
+        }
+        
+        
+        return ans;
+    }
+};
