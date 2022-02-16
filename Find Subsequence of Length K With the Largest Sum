@@ -1,0 +1,112 @@
+Problem Number: 2099
+Problem Name: Find Subsequence of Length K With the Largest Sum
+Link: https://leetcode.com/problems/find-subsequence-of-length-k-with-the-largest-sum/
+
+Question
+You are given an integer array nums and an integer k. You want to find a subsequence of nums of length k that has the largest sum.
+Return any such subsequence as an integer array of length k.
+A subsequence is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.
+     
+
+Solution
+
+Time Complexity: O(N * log(N)), where N is the length of the array
+Space Complexity: O(N), where N is the length of array
+
+
+APPROACH 1
+class Solution {
+    public int[] maxSubsequence(int[] nums, int k) {
+        
+        int n = nums.length;
+        
+        // copying the array and sorting it
+        int[] temp = new int[n];
+        for(int i=0; i<n; i++){
+            temp[i] = nums[i];
+        }
+        Arrays.sort(temp);
+        
+        // stores the largest 'k' elements in the hashmap with their frequency
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i=n-k; i<n; i++){
+            map.put(temp[i], map.getOrDefault(temp[i], 0) + 1);
+        }
+        
+        int[] ans = new int[k];
+        // traversing the array and checking whether this number is present in the last 'k' elements
+        for(int i=0, j=0; i<n; i++){
+                
+            if(map.containsKey(nums[i])  &&  map.get(nums[i]) > 0){
+                ans[j] = nums[i];
+                j++;
+                
+                map.put(nums[i], map.get(nums[i]) - 1);
+            }
+        }
+        
+        return ans;
+    }
+}
+
+
+
+Time Complexity: O(N * log(K)), where N is the length of the array and K is the length of the subsequence
+Space Complexity: O(K), where K is the length of subsequence
+
+
+APPROACH 2
+class Solution {
+    public int[] maxSubsequence(int[] nums, int k) {
+        
+        int n = nums.length;
+        
+        // storing the largest 'k' elements in the priority queue
+        PriorityQueue<Pair> pq1 = new PriorityQueue<>();
+        for(int i=0; i<n; i++){
+            if(pq1.size() < k){
+                pq1.add(new Pair(nums[i], i));
+            }   
+            else{
+                if(pq1.peek().first < nums[i]){
+                    pq1.poll();
+                    pq1.add(new Pair(nums[i], i));
+                }
+            }
+        }
+        
+        // sorting the largest 'k' elements in their order of occurrence
+        PriorityQueue<Pair> pq2 = new PriorityQueue<>();
+        while(pq1.size() > 0){
+            Pair rem = pq1.poll();
+            
+            pq2.add(new Pair(rem.second, rem.first));
+        }
+        
+        // stores the answer
+        int[] ans = new int[k];
+        int i = 0;
+        while(pq2.size() > 0){
+            Pair rem = pq2.poll();
+            
+            ans[i] = rem.second;
+            i++;
+        }
+        
+        return ans;
+    }
+        
+    public class Pair implements Comparable<Pair>{
+        
+        int first, second;
+        
+        Pair(int x, int y){
+            first = x;
+            second = y;
+        }
+        
+        public int compareTo(Pair o){
+            return this.first - o.first;
+        }
+    }
+}
