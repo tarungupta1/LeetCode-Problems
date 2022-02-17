@@ -1,0 +1,157 @@
+Problem Number: 2101
+Problem Name: Detonate the Maximum Bombs
+Link: https://leetcode.com/problems/detonate-the-maximum-bombs/
+
+Question
+You are given a list of bombs. The range of a bomb is defined as the area where its effect can be felt. This area is in the shape of a circle with the center as the 
+location of the bomb.
+The bombs are represented by a 0-indexed 2D integer array bombs where bombs[i] = [xi, yi, ri]. xi and yi denote the X-coordinate and Y-coordinate of the location of 
+the ith bomb, whereas ri denotes the radius of its range.
+You may choose to detonate a single bomb. When a bomb is detonated, it will detonate all bombs that lie in its range. These bombs will further detonate the bombs that 
+lie in their ranges.
+Given the list of bombs, return the maximum number of bombs that can be detonated if you are allowed to detonate only one bomb.
+
+               
+
+Time Complexity: O(V * V), where V is the number of bombs
+Space Complexity: O(V + E), where V is the number of bombs and E is the connections between the bombs which represents which bomb can detonate which bomb
+
+
+
+Solution
+APPROACH 1
+// Will be using directed graph to find number of bombs which will be detonated from a paritcular. So, using directed graph to depict that node A pointing to other 
+// node B means that A can detonate B
+class Solution {
+    public int maximumDetonation(int[][] bombs) {
+        
+        int n = bombs.length;        
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+        
+        // intitialising graph, finding which bomb can detonate other bombs
+        for(int i=0; i<n; i++){
+            for(int j=i+1; j<n; j++){
+                
+                long x = bombs[i][0] - bombs[j][0];
+                long y = bombs[i][1] - bombs[j][1];
+                
+                x = x * x;
+                y = y * y;
+                
+                long diff1 = bombs[i][2];
+                diff1 = diff1 * diff1;                
+                if(x + y <= diff1){
+                    graph.get(i).add(j);
+                }
+                
+                
+                long diff2 = bombs[j][2];
+                diff2 = diff2 * diff2;
+                
+                if(x + y <= diff2){
+                    graph.get(j).add(i);
+                }
+            }
+        }
+        
+        // finding maximum number of bombs that can be detonated from a particular bomb
+        int max_ans = 0;
+        for(int i=0; i<n; i++){
+            // using dfs to find connected bombs
+            int current = dfs(i, graph, new boolean[n]);
+            
+            max_ans = Math.max(max_ans, current);
+        }
+        
+        return max_ans;        
+    }
+    
+    // using DFS to find connected bombs
+    public int dfs(int node, ArrayList<ArrayList<Integer>> graph, boolean[] visited){       
+        
+        int total_nodes = 1;
+        visited[node] = true;
+        
+        for(int i : graph.get(node)){
+            if(visited[i] == false){
+                total_nodes += dfs(i, graph, visited);
+            }
+        }
+        
+        return total_nodes;
+    }
+}
+
+
+
+APPROACH 2
+// Will be using directed graph to find number of bombs which will be detonated from a paritcular. So, using directed graph to depict that node A pointing to other 
+// node B means that A can detonate B
+
+class Solution {
+    public int maximumDetonation(int[][] bombs) {
+        
+        int n = bombs.length;        
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int i=0; i<n; i++){
+            graph.add(new ArrayList<Integer>());
+        }
+        
+        // intitialising graph, finding which bomb can detonate other bombs
+        for(int i=0; i<n; i++){
+            for(int j=i+1; j<n; j++){
+                
+                long x = bombs[i][0] - bombs[j][0];
+                long y = bombs[i][1] - bombs[j][1];
+                
+                x = x * x;
+                y = y * y;
+                
+                long diff1 = bombs[i][2];
+                diff1 = diff1 * diff1;                
+                if(x + y <= diff1){
+                    graph.get(i).add(j);
+                }
+                
+                
+                long diff2 = bombs[j][2];
+                diff2 = diff2 * diff2;
+                
+                if(x + y <= diff2){
+                    graph.get(j).add(i);
+                }
+            }
+        }
+        
+        // finding maximum number of bombs that can be detonated from a particular bomb
+        int max_ans = 0;
+        for(int i=0; i<n; i++){
+            // using bfs to find connected bombs
+            int current = 0;
+            
+            LinkedList<Integer> queue = new LinkedList<>();
+            boolean[] visited = new boolean[n];
+            visited[i] = true;
+            queue.add(i);
+            
+            while(queue.size() > 0){
+                int rem = queue.remove();
+                current++;
+                
+                for(int nbr : graph.get(rem)){
+                    if(visited[nbr] == false){
+                        queue.add(nbr);
+                        visited[nbr] = true;
+                    }
+                }
+            }
+            
+            max_ans = Math.max(max_ans, current);
+        }
+        
+        return max_ans;        
+    }    
+}
