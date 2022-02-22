@@ -1,0 +1,294 @@
+Problem Number: 2102
+Problem Name: Sequentially Ordinal Rank Tracker
+Link: https://leetcode.com/problems/sequentially-ordinal-rank-tracker/
+
+Question
+A scenic location is represented by its name and attractiveness score, where name is a unique string among all locations and score is an integer. Locations can be ranked 
+from the best to the worst. The higher the score, the better the location. If the scores of two locations are equal, then the location with the lexicographically smaller 
+name is better.
+You are building a system that tracks the ranking of locations with the system initially starting with no locations. It supports:
+  -> Adding scenic locations, one at a time.
+  -> Querying the ith best location of all locations already added, where i is the number of times the system has been queried (including the current query).
+      -> For example, when the system is queried for the 4th time, it returns the 4th best location of all locations already added.
+      
+Note that the test data are generated so that at any time, the number of queries does not exceed the number of locations added to the system.
+Implement the SORTracker class:
+  -> SORTracker() Initializes the tracker system.
+  -> void add(string name, int score) Adds a scenic location with name and score to the system.
+  -> string get() Queries and returns the ith best location, where i is the number of times this method has been invoked (including this invocation).
+
+
+
+Editorial Link: 1. https://leetcode.com/problems/sequentially-ordinal-rank-tracker/discuss/1623309/Python-Explanation-with-Pictures-min-heap (Solution 2, 3)
+                2. https://leetcode.com/problems/sequentially-ordinal-rank-tracker/discuss/1632156/Two-Heaps (Solution 2, 3)
+          
+Video Link: 1. https://www.youtube.com/watch?v=6oA3fwrNDgY (Solution 1)
+
+
+
+Solution
+
+APPROACH 1
+
+Time Complexity: 1. SORTracker() function: O(1)
+                 2. add() function: O(log(N) + log(M) + M), where N is the number of scores and M is the number of names for a particular score. Here, O(log(N)) for adding 
+                      new score and O(log(M)), for doing binary search and O(M) for adding name in the arraylist
+                 3. get() function: O(N), where N is number of scores
+Space Complexity: O(K), where K is the number of adds
+
+
+class SORTracker {
+
+    // treemap is used to sort the scores in descending order
+    TreeMap<Integer, ArrayList<String>> map;
+    
+    // stores how many times we have called get function
+    int queryCount;
+    
+    public SORTracker() {
+        map = new TreeMap<>((a, b) -> b - a);   // descending order syntax
+        queryCount = 0;
+    }
+    
+    
+    // adding in the treemap 
+    public void add(String name, int score) {
+        
+        // if score is not present in the treemap, we will first create it
+        if(map.containsKey(score) == false){
+            map.put(score, new ArrayList<String>());
+        }
+        
+        // In the arraylist belonging to the particular score we will find the position where we can add the name
+        ArrayList<String> locationList = map.get(score);
+        // if no element is there in the arraylist we will simply add the element
+        if(locationList.size() == 0){
+            locationList.add(name);
+        }
+        // if there are elements in the arraylist so we will use binary search to find the index for adding the name
+        else{
+            int to_add = insertionIndexUsingBinarySearch(locationList, name);
+            locationList.add(to_add, name);
+        }
+        
+        // putting the score along with the arraylist in the treemap
+        map.put(score, locationList);
+    }
+    
+    
+    // returning the 'k'th best location    
+    public String get() {
+        
+        int remaining = queryCount;
+            
+        String ans = "";
+        // finding the string, therefore checking all the scores
+        for(int score : map.keySet()){  // as they are sorted in decreasing order, loop will also run in the descending order of scores
+            
+            // if particular arraylist size is smaller than or equal to the remaining queries, we will decrease the remaining queries
+            if(map.get(score).size() <= remaining){
+                remaining -= map.get(score).size();
+            }
+            // if particular arraylist size is greater than the remaining queries, we will find the index of the arraylist which we need to return
+            else{                
+                ans = map.get(score).get(remaining);
+                break;
+            }
+        }
+        
+        // increasing the query count
+        queryCount++; 
+        return ans;
+    }
+    
+    
+    // applying binary search to find the suitable index. The arraylist is sorted in increasing lexicographical order
+    public int insertionIndexUsingBinarySearch(ArrayList<String> al, String str){
+        
+        int low = 0, high = al.size() - 1;
+        
+        while(low < high){
+            int mid = ((high - low) / 2) + low;
+            
+            // if name present at mid index is lexicographically smaller than the "str", we will search the second half
+            if(al.get(mid).compareTo(str) < 0){
+                low = mid + 1;
+            }
+            // if name present at mid index is lexicographically bigger than the "str", we will search the first half
+            else{
+                high = mid;
+            }
+        }
+        
+        // handling one corner case
+        return al.get(low).compareTo(str) >= 0 ? low : low + 1;
+    }
+}
+
+/**
+ * Your SORTracker object will be instantiated and called as such:
+ * SORTracker obj = new SORTracker();
+ * obj.add(name,score);
+ * String param_2 = obj.get();
+ */
+ 
+ 
+ 
+ 
+APPROACH 2
+
+Time Complexity: 1. SORTracker() function: O(1)
+                 2. add() function: O(log(N)), where N is the number of scores                      
+                 3. get() function: O(log(N)), where N is the number of scores
+Space Complexity: O(K), where K is the number of adds
+
+
+class SORTracker {
+    
+private:
+        
+    struct compareMin {
+        // function to sort minHeap
+        bool operator()(pair<int, string> p1, pair<int, string> p2){
+
+            if(p1.first != p2.first){
+                return p1.first > p2.first;
+            }
+            else{
+                return p1.second < p2.second;
+            }
+        }
+    };
+    
+    struct compareMax {
+        // function to sort maxHeap
+        bool operator()(pair<int, string> p1, pair<int, string> p2){
+
+            if(p1.first != p2.first){
+                return p1.first < p2.first;
+            }
+            else{
+                return p1.second > p2.second;
+            }
+        }
+    };    
+
+    
+public:
+    
+    // will store the 'i'th best elements in minHeap
+    priority_queue<pair<int, string>, vector<pair<int, string>>, compareMin> minHeap;
+    
+    // will store the remaining elements in maxHeap
+    priority_queue<pair<int, string>, vector<pair<int, string>>, compareMax> maxHeap;
+    
+    
+    SORTracker() {        
+    }
+    
+    /*  firstly, we will add a pair in the min heap and then will remove a pair from minHeap so that minHeap has 'i'th best elements and the removed pair will be added 
+        in the maxHeap. In other words, we will compare the new pair and the pair present at the top of the minHeap. Whosoever will be best will stored in the minHeap and 
+        the other will stored in the maxHeap
+    */
+    void add(string name, int score) {
+        minHeap.push({score, name});
+        auto it = minHeap.top();
+        minHeap.pop();
+        
+        maxHeap.push(it);        
+    }
+    
+    // the next best pair is stored in the top of the maxHeap. So, we will remove it from maxHeap and store in the minHeap which wll signify that minHeap will 
+    // have 'i+1'th best elements
+    string get() {
+        auto it = maxHeap.top();
+        maxHeap.pop();
+        
+        minHeap.push(it);
+        return it.second;        
+    }
+};
+
+/**
+ * Your SORTracker object will be instantiated and called as such:
+ * SORTracker* obj = new SORTracker();
+ * obj->add(name,score);
+ * string param_2 = obj->get();
+ */
+ 
+ 
+ 
+ APPROACH 3
+
+Time Complexity: 1. SORTracker() function: O(1)
+                 2. add() function: O(log(N)), where N is the number of scores                      
+                 3. get() function: O(log(N)), where N is the number of scores
+Space Complexity: O(K), where K is the number of adds
+
+
+class SORTracker {
+
+    // will store the 'i'th best elements in minHeap
+    PriorityQueue<Pair> minHeap;
+    
+    // will store the remaining elements in maxHeap
+    PriorityQueue<Pair> maxHeap;
+    
+    public SORTracker() {
+        // the pairs should be arranged in ascending order, such that the top pair is the worst pair from the remaining pairs in the minHeap
+        minHeap = new PriorityQueue<>(Comparator.reverseOrder());
+        
+        // the pairs should be arranged in descending order, such that the top pair is the best pair from the remaining pairs in the maxHeap
+        maxHeap = new PriorityQueue<>();
+    }
+    
+    
+    /*  firstly, we will add a pair in the min heap and then will remove a pair from minHeap so that minHeap has 'i'th best elements and the removed pair will be 
+        added in the maxHeap. In other words, we will compare the new pair and the pair present at the top of the minHeap. Whosoever will be best will stored in the 
+        minHeap and the other will stored in the maxHeap
+    */
+    public void add(String name, int score) {
+        minHeap.add(new Pair(score, name));
+        Pair rem = minHeap.poll();
+        
+        maxHeap.add(rem);
+    }
+    
+    
+    // the next best pair is stored in the top of the maxHeap. So, we will remove it from maxHeap and store in the minHeap which wll signify that minHeap will 
+    // have 'i+1'th best elements
+    public String get() {
+        Pair rem = maxHeap.poll();
+        
+        minHeap.add(rem);
+        return rem.name;
+    }
+    
+    
+    // implementing the sorting part
+    public class Pair implements Comparable<Pair>{
+        int score;
+        String name;
+        
+        Pair(int x, String y){
+            score = x;
+            name = y;
+        }
+        
+        public int compareTo(Pair o){
+            if(this.score == o.score){
+                return this.name.compareTo(o.name);
+            }
+            else{
+                return o.score - this.score;
+            }
+        }
+    }
+}
+
+/**
+ * Your SORTracker object will be instantiated and called as such:
+ * SORTracker obj = new SORTracker();
+ * obj.add(name,score);
+ * String param_2 = obj.get();
+ */
