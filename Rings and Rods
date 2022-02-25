@@ -17,10 +17,8 @@ Return the number of rods that have all three colors of rings on them.
 Editorial Link: https://leetcode.com/problems/rings-and-rods/discuss/1624277/Bitmask-Counter
 
 
-Time Complexity: 1. SORTracker() function: O(1)
-                 2. add() function: O(log(N)), where N is the number of scores                      
-                 3. get() function: O(log(N)), where N is the number of scores
-Space Complexity: O(K), where K is the number of adds
+Time Complexity: O(N), where N is the length of string
+Space Complexity: O(10) = O(1)
 
 
 Solution
