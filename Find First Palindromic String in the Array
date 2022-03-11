@@ -7,7 +7,7 @@ Given an array of strings words, return the first palindromic string in the arra
 A string is palindromic if it reads the same forward and backward.
                
                
-Time Complexity: O(N * K), where N is the numbre of words and K is the maximum length of the word
+Time Complexity: O(N * K), where N is the number of words and K is the maximum length of the word
 Space Complexity: O(1)
 
 
