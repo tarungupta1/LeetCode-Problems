@@ -1,0 +1,91 @@
+Problem Number: 2106
+Problem Name: Maximum Fruits Harvested After at Most K Steps
+Link: https://leetcode.com/problems/maximum-fruits-harvested-after-at-most-k-steps/
+
+Question
+Fruits are available at some positions on an infinite x-axis. You are given a 2D integer array fruits where fruits[i] = [positioni, amounti] depicts amounti fruits at the 
+position positioni. fruits is already sorted by positioni in ascending order, and each positioni is unique.
+You are also given an integer startPos and an integer k. Initially, you are at the position startPos. From any position, you can either walk to the left or right. It takes 
+one step to move one unit on the x-axis, and you can walk at most k steps in total. For every position you reach, you harvest all the fruits at that position, and the fruits 
+will disappear from that position.
+Return the maximum total number of fruits you can harvest.
+               
+               
+
+Time Complexity: O(N + K), where N is the maximum distance the fruit is placed or the position of the player initially and K is the number of steps the player can move
+Space Complexity: O(N), where N is the maximum distance the fruit is placed or the position of the player initially
+
+
+Solution
+class Solution {
+public:
+    int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
+        
+        int n = max(fruits[fruits.size() - 1][0], startPos) + 1;
+        
+        vector<int> prefix_sum(n, 0);        
+        for(int i=0; i<fruits.size(); i++){
+            prefix_sum[fruits[i][0]] = fruits[i][1];
+        }                    
+        for(int i=1; i<n; i++){
+            prefix_sum[i] += prefix_sum[i-1];
+        }
+        
+        // optimal solution is by going in one direction then going to opposite direction if needed
+        
+        // first going left, then going right
+        int ans = 0;
+        int max_left = max(0, startPos - k);        // how much left we can go at max
+        for(int i=startPos; i >= max_left; i--){
+            
+            int dist = startPos - i;     // distance travelled
+            int rem = k - dist;          // distance remaining
+            
+            int right = min(i + rem, n-1);    // how much right we have gone for a particular left distance
+            
+            // fruits picked up while going left
+            int current_sum = prefix_sum[startPos];
+            if(i != 0){
+                current_sum -= prefix_sum[i-1];
+            }
+            
+             // fruits picked up while going right, when the person crosses the starting position
+            if(right > startPos){
+                current_sum += prefix_sum[right];                
+                current_sum -= prefix_sum[startPos];
+            }
+            
+            // for every distance travelled finding the max fruits picked
+            ans = max(ans, current_sum);
+        }
+        
+        
+        // first going right, then going left
+        int max_right = min(n-1, startPos + k);     // how much left we can go at max
+        for(int i=startPos; i <= max_right; i++){
+            
+            int dist = i - startPos;       // distance travelled     
+            int rem = k - dist;          // distance remaining
+            
+            int left = max(0, i - rem);    // how much right we have gone for a particular left distance
+            
+             // fruits picked up while going right
+            int current_sum = prefix_sum[i];
+            current_sum -= prefix_sum[startPos];
+            
+             // fruits picked up while going left, when the person crosses the starting position
+            if(left < startPos){
+                current_sum += prefix_sum[startPos];
+                
+                if(left != 0){
+                    current_sum -= prefix_sum[left - 1];
+                }
+            }
+            
+            // for every distance travelled finding the max fruits picked
+            ans = max(ans, current_sum);
+        }
+
+        return ans;
+    }
+};
