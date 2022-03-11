@@ -1,0 +1,46 @@
+Problem Number: 2108
+Problem Name: Find First Palindromic String in the Array
+Link: https://leetcode.com/problems/find-first-palindromic-string-in-the-array/
+
+Question
+Given an array of strings words, return the first palindromic string in the array. If there is no such string, return an empty string "".
+A string is palindromic if it reads the same forward and backward.
+               
+               
+Time Complexity: O(N * K), where N is the numbre of words and K is the maximum length of the word
+Space Complexity: O(1)
+
+
+Solution
+class Solution {
+public:
+    
+    // check palindrome
+    bool palindrome(string str){
+        
+        int si = 0, ei= str.length()-1;
+        while(si <= ei){
+            if(str[si] != str[ei]){
+                return false;
+            }
+            si++;
+            ei--;
+        }
+        
+        return true;
+    }
+        
+        
+    string firstPalindrome(vector<string>& words) {
+        for(int i=0; i<words.size(); i++){
+            
+            bool tag = palindrome(words[i]);
+            
+            if(tag == true){
+                return words[i];
+            }
+        }
+        
+        return "";
+    }
+};
