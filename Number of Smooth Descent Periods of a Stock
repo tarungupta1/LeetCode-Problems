@@ -1,0 +1,50 @@
+Problem Number: 2110
+Problem Name: Number of Smooth Descent Periods of a Stock
+Link: https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/
+
+Question
+You are given an integer array prices representing the daily price history of a stock, where prices[i] is the stock price on the ith day.
+A smooth descent period of a stock consists of one or more contiguous days such that the price on each day is lower than the price on the preceding day by exactly 1. 
+The first day of the period is exempted from this rule.
+Return the number of smooth descent periods.
+
+
+Editorial Link: https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/discuss/1635104/CPPJAVAPython-Explanation-with-pictures.
+
+
+Time Complexity: O(N), where N is the number of elements in the array
+Space Complexity: O(1)
+
+
+Solution
+// Sliding Window
+class Solution {
+public:
+    long long getDescentPeriods(vector<int>& prices) {
+        
+        // for first index, we will add 1 to the answer
+        long long int ans = 1;
+        
+        // starting index is at 0
+        int idx = 0;
+        for(int i=1; i<prices.size(); i++){ // here i will be the end point of the sliding window
+            
+            /* if prices of days are not smooth, then we will change the starting index to the current index and move forward. Also, we will add 1 to the answer for a 
+               single subarray
+            */
+            if(prices[i] != prices[i-1] - 1){
+                ans++;
+                idx = i;
+            }
+            /* in the window all elements are having smooth descent period, so adding one more element which is also smooth will make the new array smooth too. So, we 
+                will add length of the window to the ans, as the new element can make "length of window" times new smooth subarrays
+            */
+            else{
+                int diff = i - idx + 1;     // length of smooth window
+                ans += diff;
+            }            
+        }
+        
+        return ans;
+    }
+};
