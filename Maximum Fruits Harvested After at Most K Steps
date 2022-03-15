@@ -10,13 +10,16 @@ one step to move one unit on the x-axis, and you can walk at most k steps in tot
 will disappear from that position.
 Return the maximum total number of fruits you can harvest.
                
-               
+
+Video Link: https://youtu.be/y-br2Hee484?t=1926
+
 
 Time Complexity: O(N + K), where N is the maximum distance the fruit is placed or the position of the player initially and K is the number of steps the player can move
 Space Complexity: O(N), where N is the maximum distance the fruit is placed or the position of the player initially
 
 
 Solution
+APPROACH 1
 class Solution {
 public:
     int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
@@ -67,7 +70,7 @@ public:
             int dist = i - startPos;       // distance travelled     
             int rem = k - dist;          // distance remaining
             
-            int left = max(0, i - rem);    // how much right we have gone for a particular left distance
+            int left = max(0, i - rem);    // how much left we have gone for a particular right distance
             
              // fruits picked up while going right
             int current_sum = prefix_sum[i];
@@ -80,6 +83,74 @@ public:
                 if(left != 0){
                     current_sum -= prefix_sum[left - 1];
                 }
+            }
+            
+            // for every distance travelled finding the max fruits picked
+            ans = max(ans, current_sum);
+        }
+
+        return ans;
+    }
+};
+
+
+
+APPROACH 2
+class Solution {
+public:
+    int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
+        
+        int n = max(fruits[fruits.size() - 1][0], startPos) + 1;
+        
+        vector<int> prefix_sum(n, 0);        
+        for(int i=0; i<fruits.size(); i++){
+            prefix_sum[fruits[i][0]] = fruits[i][1];
+        }                    
+        for(int i=1; i<n; i++){
+            prefix_sum[i] += prefix_sum[i-1];
+        }
+        
+        
+        // first going left, then going right
+        int ans = 0;
+        int max_left = max(0, startPos - k);        // how much left we can go at max
+        for(int left=startPos; left >= max_left; left--){
+            
+            int dist = startPos - left;     // distance travelled
+            int rem = k - dist;             // distance remaining
+            
+            // how much right we have gone for a particular left distance
+            int right = min(left + rem, n-1);   // checking that we dont go out of bounds
+            right = max(right, startPos);       // if right is smaller than startPos, we will make right to startPos as here left and right means the extreme ends of 
+                                                // the travel. If right is greater than startPos, then no need to change right
+            
+            // total fruits picked from left to right
+            int current_sum = prefix_sum[right];
+            if(left != 0){
+                current_sum -= prefix_sum[left-1];
+            }            
+            
+            // for every distance travelled finding the max fruits picked
+            ans = max(ans, current_sum);
+        }
+        
+        
+        // first going right, then going left
+        int max_right = min(n-1, startPos + k);     // how much left we can go at max
+        for(int right=startPos; right <= max_right; right++){
+            
+            int dist = right - startPos;       // distance travelled     
+            int rem = k - dist;                // distance remaining
+            
+            // how much left we have gone for a particular right distance
+            int left = max(0, right - rem);     // checking that we dont go out of bounds
+            left = min(left, startPos);         // if left is greater than startPos, we will make left to startPos as here left and right means the extreme ends of 
+                                                // the travel. If the left is smaller than startPos, then no need to change left
+            
+            // total fruits picked from left to right
+            int current_sum = prefix_sum[right];
+            if(left != 0){
+                current_sum -= prefix_sum[left - 1];                
             }
             
             // for every distance travelled finding the max fruits picked
