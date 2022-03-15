@@ -13,9 +13,10 @@ Editorial Link: 1. https://leetcode.com/problems/sum-of-subarray-ranges/discuss/
                 3. https://leetcode.com/problems/sum-of-subarray-ranges/discuss/1696344/Java-or-Well-explained-with-examples-or-O(n)
                 4. https://leetcode.com/problems/sum-of-subarray-ranges/discuss/1673144/C%2B%2B-Solution-or-O(n2)-to-O(n)-or-Detailed-explanation-with-Walkthrough-of-Tricky-Test-Cases
 
+Video Link: 1. https://youtu.be/y-br2Hee484?t=5521
+
 
 Solution
-
 APPROACH 1
 Time Complexity: O(N * N), where N is the length of string
 Space Complexity: O(1)
@@ -172,7 +173,111 @@ class Solution {
     }
 }
 
-        
 /*  here while finding next/ prev smallest number or next/ prev biggest number, in one we used "equal to" sign and in other we didn't use equality sign. As there will be 
     duplicate elements using equality sign on both places, we will add few subarrays more than once. Also, we can see this through an example.    
 */
+
+
+
+APPROACH 3
+Time Complexity: O(N), where N is the length of string
+Space Complexity: O(N), where N is the length of string
+
+
+class Solution {
+private: 
+    
+    // finds number of subarrays where the elements are treated as minimum
+    long long int sumSubarrayMins(vector<int>& arr) {
+        
+        int n = arr.size();
+        long long ans = 0;
+        
+        stack<int> st;
+        // traversing all the elements. here, when we will traverse all elements, we are iterating the loop again for those elements who haven't got their next 
+        // smallest element. So the 'i == n' loop will work for the above said elements
+        for(int i=0; i<=n; i++){
+            
+            // remove all elements that are greater than arr[i] in the stack as we want to maintain increasing order in the stack            
+            while(st.empty() == false  &&  (i == n  ||  arr[st.top()] > arr[i])){
+                // we will pop the topmost element and find it's right and left subarray where it will be considered as minimum element
+                long long int j = st.top();
+                st.pop();
+                
+                // right subarray will be the number of elements between the next smallest element after the popped element. So, difference of both indices will be the 
+                // size of right subaaray
+                long long int right_subarray = i - j;
+                
+                // for left subarray, as we have maintained the stack in an increasing order, therefore the next top element will be previous smallest element before the 
+                // current popped element. So, difference of both indeices will be the size of left subarray. If stack is empty this means, all the elements before it 
+                // are greater than it so we will take all the elements as size of left subarray
+                long long int previous_Top = -1;
+                if(st.empty() == false){
+                    previous_Top = st.top();
+                }
+                
+                long long int left_subarray = j - previous_Top;
+                
+                // ans = (arr[i] * number of subarrays)
+                // number of subarrays = no of left subarrays * no of right subarrays
+                ans += ((long long)(arr[j]) * left_subarray * right_subarray);
+            }
+            
+            // pushing the index in the stack
+            st.push(i);
+        }
+                                     
+        return ans;
+    }
+    
+    
+    // finds number of subarrays where the elements are treated as maximum
+    long long int sumSubarrayMaxs(vector<int>& arr) {
+        
+        int n = arr.size();        
+        long long ans = 0;
+        
+        stack<int> st;
+        // traversing all the elements. here, when we will traverse all elements, we are iterating the loop again for those elements who haven't got their next biggest 
+        // element. So the 'i == n' loop will work for the above said elements
+        for(int i=0; i<=n; i++){
+            
+            // remove all elements that are smaller than arr[i] in the stack as we want to maintain decreasing order in the stack            
+            while(st.empty() == false  &&  (i == n  ||  arr[st.top()] < arr[i])){
+                // we will pop the topmost element and find it's right and left subarray where it will be considered as maximum element
+                long long int j = st.top();
+                st.pop();
+                
+                // right subarray will be the number of elements between the next biggest element after the popped element. So, difference of both indices will be the 
+                // size of right subaaray
+                long long int right_subarray = i - j;
+                
+                // for left subarray, as we have maintained the stack in an decreasing order, therefore the next top element will be previous biggest element before the 
+                // current popped element. So, difference of both indeices will be the size of left subarray. If stack is empty this means, all the elements before it are 
+                // smaller than it so we will take all the elements as size of left subarray
+                long long int previous_Top = -1;
+                if(st.empty() == false){
+                    previous_Top = st.top();
+                }
+                
+                long long int left_subarray = j - previous_Top;
+                
+                // ans = (arr[i] * number of subarrays)
+                // number of subarrays = no of left subarrays * no of right subarrays
+                ans += ((long long)(arr[j]) * left_subarray * right_subarray);
+            }
+            
+            // pushing the index in the stack
+            st.push(i);
+        }
+                                     
+        return ans;
+    }
+    
+    
+public:
+    long long subArrayRanges(vector<int>& nums) {
+        
+        return sumSubarrayMaxs(nums) - sumSubarrayMins(nums);
+    }
+};
