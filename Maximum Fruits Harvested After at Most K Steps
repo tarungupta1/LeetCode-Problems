@@ -11,14 +11,15 @@ will disappear from that position.
 Return the maximum total number of fruits you can harvest.
                
 
-Video Link: https://youtu.be/y-br2Hee484?t=1926
+Video Link: 1. https://youtu.be/y-br2Hee484?t=1926
+            2. https://youtu.be/y-br2Hee484?t=3653
 
 
+Solution
 Time Complexity: O(N + K), where N is the maximum distance the fruit is placed or the position of the player initially and K is the number of steps the player can move
 Space Complexity: O(N), where N is the maximum distance the fruit is placed or the position of the player initially
 
 
-Solution
 APPROACH 1
 class Solution {
 public:
@@ -96,6 +97,10 @@ public:
 
 
 APPROACH 2
+Time Complexity: O(N + K), where N is the maximum distance the fruit is placed or the position of the player initially and K is the number of steps the player can move
+Space Complexity: O(N), where N is the maximum distance the fruit is placed or the position of the player initially
+
+
 class Solution {
 public:
     int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
@@ -157,6 +162,81 @@ public:
             ans = max(ans, current_sum);
         }
 
+        return ans;
+    }
+};
+
+
+
+APPROACH 3
+Time Complexity: O(N), where N is length of array
+Space Complexity: O(N), where N is length of array
+
+
+// TWO POINTERS
+class Solution {
+    
+private:
+    
+    bool isValid(int startPos, int k, int left, int right){
+        
+        // if right is before the startPos, then we have to check whether we can reach left position or not. If we can reach left position this means our range will 
+        // be [left, startPos]
+        if(right <= startPos){
+            return (startPos - left <= k);                        
+        }
+        // if left is after the startPos, then we have to check whether we can reach right position or not. If we can reach right position this means our range will 
+        // be [startPos, right]
+        else if(startPos <= left){
+            return (right - startPos <= k);
+        }
+        // if both extreme ends are on either side of startPos
+        else{
+            int x = startPos - left;
+            int y = right - startPos;
+            
+            // so there are two cases possible, first if we go left and then return to startPos and then go right. Second case, if we go right and then return to startPos 
+            // and then go left.
+            // So we will be checking whether we can reach any of the path
+            if(((2*x + y) <= k)  ||  ((x + 2*y) <= k)){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+public:
+    int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
+        int n = fruits.size();
+        
+        int left_idx = 0;
+        int right_idx = 0;
+        
+        int sum = 0;
+        int ans = 0;
+        // finding which subarray will give max fruits
+        while(right_idx < n){
+            // adding fruits if we reach right pointer
+            sum += fruits[right_idx][1];
+            
+            // checking whether distance we will take is smalller than 'k'. If not then we will increase left pointer so as to decrease the distance
+            while(left_idx <= right_idx  &&  isValid(startPos, k, fruits[left_idx][0], fruits[right_idx][0]) == false){
+                // removing the fruits added in the process
+                sum -= fruits[left_idx][1];
+                
+                // increasing the left pointer
+                left_idx++;
+            }
+    
+            // for a particular valid path, taking the maximum amount of fruits possible
+            ans = max(sum, ans);
+            
+            // increasing right pointer to increase the distance
+            right_idx++;
+        }
+        
+        // returning the max fruits
         return ans;
     }
 };
