@@ -13,7 +13,6 @@ Space Complexity: O(1)
 
 Solution
 
-APPROACH 1
 // Kadane's Algorithm 
 class Solution {
 public:
