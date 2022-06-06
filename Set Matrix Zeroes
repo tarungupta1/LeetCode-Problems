@@ -13,6 +13,8 @@ Space Complexity: O(1)
 
 
 Solution
+
+APPROACH 1
 #include <bits/stdc++.h> 
 void setZeros(vector<vector<int>> &matrix){
 	// Write your code here.
