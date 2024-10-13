@@ -1,0 +1,64 @@
+Problem Number: 2707
+Problem Name: Extra Characters in a String
+Link: https://leetcode.com/problems/adding-spaces-to-a-string/
+
+Question
+You are given a 0-indexed string s and a dictionary of words dictionary. You have to break s into one or more non-overlapping substrings such that each substring is present in dictionary. There may be some extra characters in s which are not present in any of the substrings.
+Return the minimum number of extra characters left over if you break up s optimally.          
+
+
+               
+Time Complexity: O(N * N), where N is the length of the string
+Space Complexity: O(N), where N is the length of the string
+
+
+Solution
+class Solution {
+public:
+    int minExtraChar(string s, vector<string>& dictionary) {
+        
+        set<string> uset;
+        for(auto i : dictionary) {
+            uset.insert(i);
+        }
+        
+        int n = s.length();
+        vector<int> dp(n+1, -1);
+        
+        return func(0, s, uset, dp);
+    }
+    
+    // Check if we can split the string starting from this index at any position
+    int func(int src, string& s, set<string>& uset, vector<int>& dp) {
+        // when we reach the end of the string
+        if (src == s.length()) {
+            return dp[src] = 0;
+        }
+        
+        if (dp[src] != -1) {
+            return dp[src];
+        }
+        
+        int value = INT_MAX;
+        string newString = "";
+        
+        // For all indexes checking whether string can be split from current index. 
+        // We need to check all the strings irrespctive if we find a string present in dictionary in between
+        for (int i=src; i<s.length(); i++) {
+            
+            newString += s[i];
+            
+            // if splitted string is present in dictionary, then we can start checking for next string and for this splitted string we foun no extra characters
+            if (uset.find(newString) != uset.end()) {
+                int curr = func(i+1, s, uset, dp);
+                value = min(value, curr);
+            }
+        }
+        
+        // Current character is counted as an extra character, then we can start checking for next string
+        int curr = 1 + func(src+1, s, uset, dp);
+        value = min(value, curr);
+        
+        return dp[src] = value;
+    }    
+};
