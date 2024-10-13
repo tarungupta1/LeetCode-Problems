@@ -1,0 +1,50 @@
+Problem Number: 3043
+Problem Name: Find the Length of the Longest Common Prefix
+Link: https://leetcode.com/problems/find-the-length-of-the-longest-common-prefix/
+
+Question
+You are given two arrays with positive integers arr1 and arr2.
+A prefix of a positive integer is an integer formed by one or more of its digits, starting from its leftmost digit. For example, 123 is a prefix of the integer 12345, while 234 is not.
+A common prefix of two integers a and b is an integer c, such that c is a prefix of both a and b. For example, 5655359 and 56554 have a common prefix 565 while 1223 and 43456 do not have a common prefix.
+You need to find the length of the longest common prefix between all pairs of integers (x, y) such that x belongs to arr1 and y belongs to arr2.
+Return the length of the longest common prefix among all pairs. If no common prefix exists among them, return 0.            
+
+
+               
+Time Complexity: O((N * log10(A)) + (M * log10(B))), where N and M are the length of the array1 and array2. A and B are the maximum value in array1 and array2
+Space Complexity: O(N * log10(A)), where N is the length of the array1.  A is the maximum value in array1
+
+
+Solution
+class Solution {
+    public int longestCommonPrefix(int[] arr1, int[] arr2) {
+        
+        HashSet<String> set = new HashSet<>();
+        
+        // Save all the prefixes of array 1 in a hashset
+        for(int i : arr1) {
+            int val = i;
+            
+            while(val > 0) {
+                set.add(String.valueOf(val));
+                val /= 10;
+            }
+        }
+        
+        // Check if any prefix of array 2 is present in hashset. If yes, then find the max size
+        int ans = 0;
+        for(int i : arr2) {
+            int val = i;
+            
+            while(val > 0) {
+                if (set.contains(String.valueOf(val))) {
+                    ans = Math.max(ans, String.valueOf(val).length());                    
+                }
+                
+                val /= 10;
+            }
+        }
+        
+        return ans;
+    }
+}
