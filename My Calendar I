@@ -1,0 +1,168 @@
+Problem Number: 729
+Problem Name: My Calendar I
+Link: https://leetcode.com/problems/my-calendar-i/
+
+Question
+You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a double booking.
+A double booking happens when two events have some non-empty intersection (i.e., some moment is common to both events.).
+The event can be represented as a pair of integers start and end that represents a booking on the half-open interval [start, end), the range of real numbers x such that start <= x < end.
+Implement the MyCalendar class:
+    MyCalendar() Initializes the calendar object.
+    boolean book(int start, int end) Returns true if the event can be added to the calendar successfully without causing a double booking. Otherwise, return false and do not add the event to the calendar.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 1
+class MyCalendar {
+public:
+    
+    vector<pair<int, int>> v;
+    
+    MyCalendar() {
+    }
+    
+    bool book(int start, int end) {
+        
+        for(int i=0; i<v.size(); i++){
+            
+            // if start is between both the terminals i.e. some part from start has intersection with the pair
+            if(v[i].first <= start &&  start < v[i].second){
+                return false;
+            }            
+            // if end is between both the terminals i.e. some part from middle to end has intersection with the pair
+            else if(start <= v[i].first  &&  v[i].second <= end){
+                return false;
+            }
+            // if start is before first and end is after second i.e. start->end overlaps the pair
+            else if(v[i].first < end  &&  end <= v[i].second){
+                return false;
+            }
+        }       
+        
+        v.push_back(make_pair(start, end));
+        
+        return true;        
+    }
+};
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar* obj = new MyCalendar();
+ * bool param_1 = obj->book(start,end);
+ */
+
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class MyCalendar {
+public:
+    
+    vector<pair<int, int>> v;
+    
+    MyCalendar() {        
+    }
+    
+    bool book(int start, int end) {
+        
+        for(int i=0; i<v.size(); i++){
+            
+            // if existing event starts before new event finishes and existing event finishes after new event starts, then there is some intersection
+            if(v[i].first < end  &&  start < v[i].second){
+                return false;
+            }            
+        }       
+        
+        v.push_back(make_pair(start, end));
+        
+        return true;        
+    }
+};
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar* obj = new MyCalendar();
+ * bool param_1 = obj->book(start,end);
+ */
+
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 3
+class MyCalendar {
+public:
+    
+    vector<pair<int, int>> v;
+    
+    MyCalendar() {        
+    }
+    
+    bool book(int start, int end) {
+        
+        for(int i=0; i<v.size(); i++){
+            
+            // if an existing event ends before new event starts or an existing event starts before new event ends, then it is acceptable
+            if(end <= v[i].first  ||  v[i].second <= start){
+                continue;
+            }   
+            else {
+                return false;
+            }
+        }       
+        
+        v.push_back(make_pair(start, end));
+        
+        return true;        
+    }
+};
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar* obj = new MyCalendar();
+ * bool param_1 = obj->book(start,end);
+ */
+
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 4
+class MyCalendar {
+public:
+    
+    vector<pair<int, int>> v;
+    
+    MyCalendar() {        
+    }
+    
+    bool book(int start, int end) {
+        
+        for(int i=0; i<v.size(); i++){
+            
+            if(max(start, v[i].first) < min(end, v[i].second)) {
+                return false;
+            }
+        }       
+        
+        v.push_back(make_pair(start, end));
+        
+        return true;        
+    }
+};
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar* obj = new MyCalendar();
+ * bool param_1 = obj->book(start,end);
+ */
