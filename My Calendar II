@@ -1,0 +1,179 @@
+Problem Number: 731
+Problem Name: My Calendar II
+Link: https://leetcode.com/problems/my-calendar-ii/
+
+Question
+You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a triple booking.
+A triple booking happens when three events have some non-empty intersection (i.e., some moment is common to all the three events.).
+The event can be represented as a pair of integers start and end that represents a booking on the half-open interval [start, end), the range of real numbers x such that start <= x < end.
+Implement the MyCalendarTwo class:
+    MyCalendarTwo() Initializes the calendar object.
+    boolean book(int start, int end) Returns true if the event can be added to the calendar successfully without causing a triple booking. Otherwise, return false and do not add the event to the calendar.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 1
+class MyCalendarTwo {
+public:
+    
+    vector<pair<int, int>> allEvents;          // contains events which can be single or double booked
+    vector<pair<int, int>> intersectedEvents;  // contains events which are double booked
+    
+    MyCalendarTwo() {
+    }
+    
+    bool book(int start, int end) {
+    
+        // if the new event is coinciding with intersectedEvents, then we can't add the event.
+        for (int i=0; i<intersectedEvents.size(); i++) {
+            if (max(start, intersectedEvents[i].first) < min(end, intersectedEvents[i].second)) {
+                return false;
+            }
+        }        
+        
+        // Event can be added 
+        
+        // Add the new event in the intersectedEvents if the new event coincides with another existing event
+        for (int i=0; i<allEvents.size(); i++) {
+            if (max(start, allEvents[i].first) < min(end, allEvents[i].second)) {
+                int intersectedStart = max(start, allEvents[i].first);
+                int intersectedEnd = min(end, allEvents[i].second);
+                
+                // add the intersection part of the event
+                intersectedEvents.push_back(make_pair(intersectedStart, intersectedEnd));
+            }
+        }
+        
+        // Add the new event in allEvents
+        allEvents.push_back(make_pair(start, end));
+        return true;
+    }
+};
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo* obj = new MyCalendarTwo();
+ * bool param_1 = obj->book(start,end);
+ */
+
+
+
+Time Complexity: O(N * (log(N) + N)), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class MyCalendarTwo {
+public:
+    
+    vector<pair<int, int>> allEvents;          // contains events which can be single or double booked
+    set<pair<int, int>> intersectedEvents;  // contains events which are double booked
+    
+    MyCalendarTwo() {
+    }
+    
+    bool book(int start, int end) {
+    
+        // if the new event is coinciding with intersectedEvents, then we can't add the event.
+        // Checking this via binarySearch to reduce time complexity
+        
+        // Event which starts just after the 'start' time
+        auto event = intersectedEvents.lower_bound(make_pair(start, end));
+        
+        // If the event selected starts before the new event finshes, we can't add the event
+        if (event != intersectedEvents.end()  &&  event->first < end) {
+            return false;
+        }
+        
+        // If the event selected's previous event finishes after the new event starts, we can't add the event
+        if (event != intersectedEvents.begin()  &&  start < prev(event)->second) {
+            return false;
+        }
+                
+        
+        // Event can be added 
+        
+        // Add the new event in the intersectedEvents if the new event coincides with another existing event
+        for (int i=0; i<allEvents.size(); i++) {
+            if (max(start, allEvents[i].first) < min(end, allEvents[i].second)) {
+                int intersectedStart = max(start, allEvents[i].first);
+                int intersectedEnd = min(end, allEvents[i].second);
+                
+                // add the intersection part of the event
+                intersectedEvents.insert(make_pair(intersectedStart, intersectedEnd));
+            }
+        }
+        
+        // Add the new event in allEvents
+        allEvents.push_back(make_pair(start, end));
+        return true;
+    }
+};
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo* obj = new MyCalendarTwo();
+ * bool param_1 = obj->book(start,end);
+ */
+
+
+
+Time Complexity: O((N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 3
+class MyCalendarTwo {
+public:
+
+    // stores number of events starting or ending a particular day. 
+    // Positive value signifies there are more events which will start on that day. Negative value signifies there are more events which will end on that day
+    map<int, int> dayEvents;     
+    
+    MyCalendarTwo() {     
+    }
+    
+    bool book(int start, int end) {
+    
+        // Add the event to determine whether this event causes any triple booking
+        dayEvents[start]++;
+        dayEvents[end]--;
+        
+        
+        int numberOfEvents = 0;
+        // Iterating over to find if there is any day which has triple bookings using prefixSum
+        for (auto i : dayEvents) {
+            
+            numberOfEvents += i.second;
+            
+            // If we find a day with triple bookings, cancel the third booking
+            if (numberOfEvents > 2) {
+                
+                dayEvents[start]--;
+                dayEvents[end]++;
+                
+                if (dayEvents[start] == 0) {
+                    dayEvents.erase(start);
+                }
+                
+                if (dayEvents[end] == 0) {
+                    dayEvents.erase(end);
+                }
+                
+                return false;
+            }
+        }
+        
+        return true;        
+    }
+};
+/**
+ * Your MyCalendarTwo object will be instantiated and called as such:
+ * MyCalendarTwo* obj = new MyCalendarTwo();
+ * bool param_1 = obj->book(start,end);
+ */
