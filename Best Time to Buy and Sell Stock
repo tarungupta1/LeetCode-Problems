@@ -1,0 +1,106 @@
+Problem Number: 121
+Problem Name: Best Time to Buy and Sell Stock
+Link: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+
+Question
+You are given an array prices where prices[i] is the price of a given stock on the ith day.
+You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0. 
+           
+            
+Solution 
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 1
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        
+        int n = prices.size();
+        
+        // find minimum buying price for all days 
+        vector<int> minimumBuyingPrice(n, 0);
+        minimumBuyingPrice[0] = INT_MAX;
+        for(int i=1; i<n; i++) {
+            minimumBuyingPrice[i] = min(minimumBuyingPrice[i-1], prices[i-1]);
+        }
+        
+        int ans = 0;
+        for(int i=1; i<n; i++) {
+            int profit = prices[i] - minimumBuyingPrice[i];
+            
+            ans = max(ans, profit);
+        }
+        
+        return ans;
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        
+        int n = prices.size();
+        
+        // find maximum selling price for all days
+        vector<int> maximumSellingPrice(n, 0);
+        maximumSellingPrice[n-1] = INT_MIN;
+        for(int i=n-2; i>=0; i--) {
+            maximumSellingPrice[i] = max(maximumSellingPrice[i+1], prices[i+1]);
+        }
+        
+        int ans = 0;
+        for(int i=0; i<n-1; i++) {
+            int profit = maximumSellingPrice[i] - prices[i];
+            
+            ans = max(ans, profit);
+        }
+        
+        return ans;
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 3
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        
+        int n = prices.size();
+        
+        int st = 0, en = 1;
+        
+        int ans= 0;
+        while(en < n) {
+            
+            // If buying price is lower than selling price, then find profit. If not, then update buying price to selling price
+            if (prices[st] < prices[en]) {
+                int curr = prices[en] - prices[st];
+                ans = max(ans, curr);
+            }
+            else {
+                st = en;
+            }
+            
+            en++;
+        }
+        
+        return ans;
+    }
+};
