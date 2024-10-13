@@ -1,0 +1,59 @@
+Problem Number: 1371
+Problem Name: Find the Longest Substring Containing Vowels in Even Counts
+Link:https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/
+
+Question
+Given the string s, return the size of the longest substring containing each vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.         
+
+
+               
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(26) + O(32) = O(1)
+
+
+Solution
+class Solution {
+    public int findTheLongestSubstring(String s) {
+        
+        int[] charMap = characterMap();
+        
+        // HashMap to store the first occurrence of each state
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        
+        
+        int ans = 0;
+        
+        // Determine the count of vowels based on parity
+        int xor = 0;
+        
+        for(int i=0; i<s.length(); i++) {
+            char ch = s.charAt(i);
+            xor = (xor ^ (charMap[ch - 'a']));
+            
+            // Store the first occurrence of this state
+            if (!map.containsKey(xor)) {
+                map.put(xor, i);
+            }
+            
+            int curr = i - map.get(xor);
+            ans = Math.max(ans, curr);                          
+        }
+        
+        return ans;
+    }
+    
+    private int[] characterMap() {
+        int[] charMap = new int[26];
+        
+        Arrays.fill(charMap, 0);
+        
+        charMap[0] = 1;
+        charMap[4] = 2;
+        charMap[8] = 4;
+        charMap[14] = 8;
+        charMap[20] = 16;
+        
+        return charMap;
+    }
+}
