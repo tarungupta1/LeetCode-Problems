@@ -7,12 +7,15 @@ Given two strings s1 and s2, return true if s2 contains a permutation of s1, or 
 In other words, return true if one of s1's permutations is the substring of s2.           
 
 
-               
-Time Complexity: O(N + M)), where N and M is the length of the string1 and string2
-Space Complexity: O(26)
-
 
 Solution
+
+              
+Time Complexity: O(N + M)), where N and M is the length of the string1 and string2
+Space Complexity: O(26) = O(1)
+
+
+APPROACH 1
 class Solution {
     public boolean checkInclusion(String s1, String s2) {
         
@@ -51,6 +54,83 @@ class Solution {
             }
             
             count2[s2.charAt(left) - 'a']--;
+            
+            left++;
+            right++;
+        }
+                  
+      return false;
+    }
+}
+
+
+              
+Time Complexity: O(N + M)), where N and M is the length of the string1 and string2
+Space Complexity: O(26) = O(1)
+
+
+APPROACH 2
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        
+        if (s1.length() > s2.length()) {
+            return false;
+        }
+        
+        // stores frequency of first string
+        int[] count1 = new int[26];
+        for(Character ch : s1.toCharArray()) {
+            count1[ch - 'a']++;
+        }
+        
+        // stores frequency of second string
+        int[] count2 = new int[26];
+        for(int i=0; i<s1.length()-1; i++) {
+            count2[s2.charAt(i) - 'a']++;
+        }
+        
+        // stores unique number of characters which are matching in both the strings
+        int uniqueCharactersMatch = 0;
+        for(int i=0; i<26; i++) {
+            if (count1[i] == count2[i]) {
+                uniqueCharactersMatch++;
+            }
+        }
+        
+        // for each substring check if count2 matches count1 using uniqueCharactersMatch variable
+        // here window size would be length of s1 for all iterations
+        int left = 0, right = s1.length()-1;
+        while(right < s2.length()) {
+            
+            // Adding another character from right pointer
+            int chRight = s2.charAt(right) - 'a';
+            count2[chRight]++;
+            
+            // determining whether addition of another character affected the uniqueCharactersMatch value
+            if (count1[chRight] == count2[chRight]) {
+                uniqueCharactersMatch++;
+            }
+            else if (count1[chRight]+1 == count2[chRight]) {
+                uniqueCharactersMatch--;
+            }
+
+            // if uniqueCharactersMatch matches string2 length, then we have found palindrome
+            if (uniqueCharactersMatch == 26) {
+                return true;
+            }
+            
+            
+            // Removing another character from left pointer
+            int chLeft = s2.charAt(left) - 'a';
+            count2[chLeft]--;
+            
+            // determining whether removal of another character affected the uniqueCharactersMatch value
+            if (count1[chLeft] == count2[chLeft]) {
+                uniqueCharactersMatch++;
+            }
+            else if (count1[chLeft]-1 == count2[chLeft]) {
+                uniqueCharactersMatch--;
+            }
             
             left++;
             right++;
