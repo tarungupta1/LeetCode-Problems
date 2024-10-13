@@ -1,0 +1,172 @@
+Problem Number: 76
+Problem Name: Minimum Window Substring
+Link: https://leetcode.com/problems/minimum-window-substring/
+
+Question
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+The testcases will be generated such that the answer is unique.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O(M + (N * M)), where N and M are the length of the string1 and string2
+Space Complexity: O(N + M), where N and M are the length of the string1 and string2
+
+
+APPROACH 1
+class Solution {
+    public String minWindow(String s, String t) {
+        
+        if (s.length() < t.length()) {
+            return "";
+        }
+        
+        // Stores frequency of string2
+        HashMap<Character, Integer> map1 = new HashMap<>();
+        for(Character ch : t.toCharArray()) {
+            map1.put(ch, map1.getOrDefault(ch, 0) + 1);
+        }
+        
+        // Stores frequency of string1
+        HashMap<Character, Integer> map2 = new HashMap<>();
+        for(int i=0; i<t.length()-1; i++) {
+            char ch = s.charAt(i);
+            map2.put(ch, map2.getOrDefault(ch, 0) + 1);
+        }
+        
+        // Smallest string possible left and right pointers
+        int minimumLength = Integer.MAX_VALUE;
+        int ansLeft = -1, ansRight = -1;
+        
+        int left = 0, right = t.length()-1;
+        while(right < s.length()) {
+            
+            char chRight = s.charAt(right);            
+            map2.put(chRight, map2.getOrDefault(chRight, 0) + 1);
+            
+            
+            // checks if the current string1 and string2 matches along with the frequency.
+            // If it matches, then try to shorten the string1 until both strings stop matching
+            while(check(map1, map2)) {
+                int current = right - left + 1;
+                if (current < minimumLength) {
+                    ansLeft = left;
+                    ansRight = right;
+                    minimumLength = current;
+                }
+
+                // Shortening size to check if new string matches string2
+                char chLeft = s.charAt(left);
+                map2.put(chLeft, map2.get(chLeft) - 1);
+                left++;
+            }
+            
+            right++;
+        }
+        
+        if (minimumLength == Integer.MAX_VALUE) {
+            return "";
+        }
+        
+        return s.substring(ansLeft, ansRight + 1);
+    }
+    
+    // Checks whether all characters present map1 are present in map2 with their count
+    public boolean check(HashMap<Character, Integer> map1, HashMap<Character, Integer> map2) {
+        
+        for (Character key : map1.keySet()) {
+            if (!map2.containsKey(key) || map1.get(key) > map2.get(key)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+
+Time Complexity: O(M + N), where N and M are the length of the string1 and string2
+Space Complexity: O(N + M), where N and M are the length of the string1 and string2
+
+
+APPROACH 2
+// Idea behind this approach is that we need to increase/decrease the charactersToMatch value for the characters present in the string2. For that we should notice that at any point of iteration, these characters CAN have positive frequency denoting these values are currently not present in the window
+class Solution {
+    public String minWindow(String s, String t) {
+
+        if (s.length() < t.length()) {
+            return "";
+        }
+
+        // Stores frequency of string2
+        HashMap < Character, Integer > map1 = new HashMap < > ();
+        for (Character ch: t.toCharArray()) {
+            map1.put(ch, map1.getOrDefault(ch, 0) + 1);
+        }
+
+        // stores how many characters are needed to be added in the string to make it equal to string2
+        int charactersToMatch = t.length();
+        
+        // Removes the characters' frequency which are present in the first prefix string which is taken from string1
+        for(int i=0; i<t.length()-1; i++) {
+            char ch = s.charAt(i);
+            
+            // if the character's frequency is positive, then it means that it needs to be added in the window. As we are creating a window and this character will be included therefore reducing the charactersToMatch count
+            if (map1.containsKey(ch) && map1.get(ch) > 0) {
+                charactersToMatch--;
+            }
+            
+            map1.put(ch, map1.getOrDefault(ch, 0) - 1);
+        }
+
+        
+        // Smallest string possible left and right pointers
+        int minimumLength = Integer.MAX_VALUE;
+        int ansLeft = -1, ansRight = -1;
+
+        int left = 0, right = t.length() - 1;
+        while (right < s.length()) {
+
+            char chRight = s.charAt(right);
+            
+            // if the character's frequency is positive, then it means that it needs to be added in the window. As we are increasing the window and this character will be included therefore reducing the charactersToMatch count
+            if (map1.containsKey(chRight) && map1.get(chRight) > 0) {
+                charactersToMatch--;
+            }            
+            map1.put(chRight, map1.getOrDefault(chRight, 0) - 1);
+
+            
+            // checks if the current string1 and string2 matches along with the frequency.
+            // if charactersToMatch matches 0, then we have found a string which has all characters present in string2
+            while (charactersToMatch == 0) {
+                int current = right - left + 1;
+                if (current < minimumLength) {
+                    ansLeft = left;
+                    ansRight = right;
+                    minimumLength = current;
+                }
+
+                // Shortening size to check if new string matches string2            
+                char chLeft = s.charAt(left);
+                left++;
+                
+                map1.put(chLeft, map1.getOrDefault(chLeft, 0) + 1);
+                // if the character's frequency is positive, then it means that it needs to be added in the window. As we are shortening the window and this character will be excluded therefore increasing the charactersToMatch count
+                if (map1.containsKey(chLeft) && map1.get(chLeft) > 0) {
+                        charactersToMatch++;
+                }
+            }
+
+            right++;
+        }
+
+        if (minimumLength == Integer.MAX_VALUE) {
+            return "";
+        }
+
+        return s.substring(ansLeft, ansRight + 1);
+    }
+}
