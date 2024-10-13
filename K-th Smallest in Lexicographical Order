@@ -1,0 +1,66 @@
+Problem Number: 440
+Problem Name: K-th Smallest in Lexicographical Order
+Link: https://leetcode.com/problems/k-th-smallest-in-lexicographical-order/
+
+Question
+Given two integers n and k, return the kth lexicographically smallest integer in the range [1, n].    
+
+
+               
+Time Complexity: O(log(N) * log(N)), where N is the length of the number of elements
+Space Complexity: O(1)
+
+
+Solution
+class Solution {
+public:
+    int findKthNumber(int n, int k) {
+        
+         // Start with 1 since we consider numbers starting from 1
+        int current = 1;
+        
+        // Decrement k because the first element (1) is already considered
+        k--;
+        
+        
+        while (k > 0) {
+            
+            // Count the steps between current subtree and the next subtree
+            int steps = countSteps(current, current+1, n);
+            
+            // If the steps are less than or equal to k, we skip current subtree
+            if (steps <= k) {
+                // We move to next subtree
+                // Reduce k by number of vaules possible in the current subtree
+                k -= steps;
+                current++;
+            }
+            else {
+                // We move deep to current subtree as the value will exist inside the current subtree
+                // Reduce k by 1 which s considering the current element
+                k--;
+                current *= 10;
+            }
+        }
+        
+        return current;
+    }
+    
+    // Counts numbers possible between 2 subtrees
+    int countSteps(long long current, long long next, long long n) {
+        
+        int count = 0;
+        
+        while(current <= n) {
+            
+            // if the next subtree is greater than the limit(n), the consider n as the higher limit instead of next
+            int val = min(n + 1, next) - current;
+            count += val;
+            
+            current *= 10;
+            next *= 10;
+        }
+        
+        return count;
+    }
+};
