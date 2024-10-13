@@ -1,0 +1,108 @@
+Problem Number: 704
+Problem Name: Binary Search
+Link: https://leetcode.com/problems/binary-search/
+
+Question
+Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.
+You must write an algorithm with O(log n) runtime complexity.
+
+           
+            
+Solution 
+
+
+Time Complexity: O((log(N)), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 1
+class Solution {
+    public int search(int[] nums, int target) {
+        
+        int low = 0, high = nums.length-1;
+        
+        while (low <= high) {
+            int mid = (low + (high - low)/2);
+            
+            if (nums[mid] == target) {
+                return mid;
+            }
+            else if (nums[mid] < target) {
+                low = mid + 1;
+            }
+            else {
+                high = mid - 1;
+            }
+        }
+        
+        return -1;
+    }
+}
+
+
+
+Time Complexity: O((log(N)), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 2
+// UPPER BOUND: Used to find position where elements before that are all smaller or equal to the particular element and elements after that are greater than the particular element
+class Solution {
+    public int search(int[] nums, int target) {
+        
+        int low = 0, high = nums.length;
+        
+        while (low < high) {
+            int mid = (low + (high - low)/2);
+            
+            if (nums[mid] <= target) {
+                low = mid + 1;
+            }
+            else {
+                high = mid;
+            }
+        }
+        
+        // NOTE: low is the position where we can add target.
+        // We need to check if the previous index's value is target or not
+        if (low > 0 && nums[low-1] == target) {
+            return low-1;
+        }
+        
+        return -1;
+    }
+}
+
+
+
+Time Complexity: O((log(N)), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 3
+// LOWER BOUND: Used to find position where elements before that are all smaller than the particular element and elements after that are greater or equal to the particular element
+class Solution {
+    public int search(int[] nums, int target) {
+        
+        int low = 0, high = nums.length;
+        
+        while (low < high) {
+            int mid = (low + (high - low)/2);
+            
+            if (nums[mid] < target) {
+                low = mid + 1;
+            }
+            else {
+                high = mid;
+            }
+        }
+        
+        // NOTE: low is the position where we can add target.
+        // We need to check if the current index's value is target or not
+        if (low != nums.length && nums[low] == target) {
+            return low;
+        }
+        
+        return -1;
+    }
+}
