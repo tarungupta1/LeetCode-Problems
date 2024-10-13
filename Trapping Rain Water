@@ -1,0 +1,101 @@
+Problem Number: 42
+Problem Name: Trapping Rain Water
+Link: https://leetcode.com/problems/trapping-rain-water/
+
+Question
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 1
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        
+        int n = height.size();
+        
+        vector<int> prefix(n, 0);
+        prefix[0] = 0;
+        for(int i=1; i<n; i++) {
+            prefix[i] = max(height[i-1], prefix[i-1]);
+        } 
+        
+        vector<int> suffix(n, 0);
+        suffix[n-1] = 0;
+        for(int i=n-2; i>=0; i--) {
+            suffix[i] = max(height[i+1], suffix[i+1]);
+        }
+        
+
+        long long ans = 0;
+        for(int i=0; i<n; i++) {
+            // find the level till which we can fill by finding shorter height on left and right side
+            int currHeight = min(prefix[i], suffix[i]);
+            
+            if (currHeight > height[i]) {
+                ans += (currHeight - height[i]);
+            }
+        }
+        
+        return (int)(ans);
+    }
+};
+
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        
+        int n = height.size();
+        
+        int st = 0, en = n-1;
+        int leftMax = 0, rightMax = 0;
+
+        long long ans = 0;
+        while(st <= en) {
+            
+            int currHeight;   // height of the level
+            int surroundingHeight;   // maximum surrounding height (combination fo left and right sides) for an element
+            
+            // If left side level is smaller than right side level, then find water stored for left element
+            if (leftMax < rightMax) {
+                
+                currHeight = height[st];
+                surroundingHeight = leftMax;
+                
+                // update water level after computing the corresponding side
+                leftMax = max(leftMax, height[st]);
+                st++;
+            }
+            else {
+                
+                currHeight = height[en];
+                surroundingHeight = rightMax;
+                
+                // update water level after computing the corresponding side
+                rightMax = max(rightMax, height[en]);
+                en--;
+            }
+            
+            if (surroundingHeight > currHeight) {
+                ans += (surroundingHeight - currHeight);
+            }
+            
+        }
+        
+        return (int)(ans);
+    }
+};
