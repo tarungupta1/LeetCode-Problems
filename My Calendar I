@@ -15,7 +15,7 @@ Implement the MyCalendar class:
 Solution 
 
 
-Time Complexity: O((N^2), where N is the length of the array
+Time Complexity: O(N^2), where N is the length of the array
 Space Complexity: O(N), where N is the length of the array
 
 
@@ -59,7 +59,7 @@ public:
 
 
 
-Time Complexity: O((N^2), where N is the length of the array
+Time Complexity: O(N^2), where N is the length of the array
 Space Complexity: O(N), where N is the length of the array
 
 
@@ -95,7 +95,7 @@ public:
 
 
 
-Time Complexity: O((N^2), where N is the length of the array
+Time Complexity: O(N^2), where N is the length of the array
 Space Complexity: O(N), where N is the length of the array
 
 
@@ -134,7 +134,7 @@ public:
 
 
 
-Time Complexity: O((N^2), where N is the length of the array
+Time Complexity: O(N^2), where N is the length of the array
 Space Complexity: O(N), where N is the length of the array
 
 
