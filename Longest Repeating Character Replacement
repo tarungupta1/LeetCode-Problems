@@ -1,0 +1,74 @@
+Problem Number: 424
+Problem Name: Longest Repeating Character Replacement
+Link: https://leetcode.com/problems/longest-repeating-character-replacement/
+
+Question
+You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O(26 * N), where N is the length of the array
+Space Complexity: O(1), where N is the length of the array
+
+
+APPROACH 1
+class Solution {
+    public int characterReplacement(String s, int k) {
+        
+        int ans = 0;
+        int n = s.length();
+        
+        // Iterating through each character to find ans when they are considered as the most frequent character
+        for(char ch = 'A'; ch <= 'Z'; ch++) {
+            
+            int left=0, right=0;
+            int replacementCharacterCount = 0;   // stores number of characters to be replaced in a string
+            
+            // Iterate over the while string to find the longest string
+            while (right < n) {
+                
+                // If right pointer finds matching character, then we can move right pointer ahead
+                if (s.charAt(right) == ch) {
+                    right++;
+                }
+                else {
+                    
+                    // If right pointer doesn't find matching character and the replacementCharacterCount is less than 'K', then we can move right pointer ahead as still the condition will pass
+                    if (replacementCharacterCount < k) {
+                        right++;
+                        replacementCharacterCount++;
+                    }
+                    else {
+                        
+                        // The current window has replacementCharacterCount more than 'K', then we need to shorten the window, therefore move left pointer ahead. While doing this check whether the character excluded is the matching character or not. Accordingly, update the replacementCharacterCount
+                        if (s.charAt(left) == ch) {
+                            left++;
+                        }
+                        else {
+                            left++;
+                            replacementCharacterCount--;
+                        }
+                    }
+                }
+                
+                // Find the maximum valid string length as the window will always be valid
+                ans = Math.max(ans, right - left);
+            }
+        }
+        
+        return ans;
+    }
+}
+
+
+
+Time Complexity: O(N^2), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class MyCalendar {
