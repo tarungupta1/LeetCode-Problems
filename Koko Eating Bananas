@@ -1,0 +1,51 @@
+Problem Number: 875
+Problem Name: Koko Eating Bananas
+Link: https://leetcode.com/problems/koko-eating-bananas/
+
+Question
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
+Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+Return the minimum integer k such that she can eat all the bananas within h hours.
+ 
+           
+
+Time Complexity: O(N + (N*(log(Max_Element)))), where N is the length of the array and Max_Element is the maximum element of the array
+Space Complexity: O(1)
+
+
+Solution 
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        
+        // Initalize the left and right boundaries 
+        int left = 1, right = -1;
+        for(int i : piles) {
+            right = Math.max(i, right);
+        }
+        
+        while (left < right) {
+            // Get the middle index between left and right boundary indexes.
+            // hourSpent stands for the total hour Koko spends.
+            int middle = (left + right) / 2;
+            int hourSpent = 0;
+
+            // Iterate over the piles and calculate hourSpent.
+            // We increase the hourSpent by ceil(pile / middle).
+            for (int pile : piles) {
+                hourSpent += ((pile / middle) + ((pile % middle != 0) ? 1 : 0));
+            }
+
+            // Check if middle is a workable speed, and cut the search space by half.
+            if (hourSpent <= h) {
+                right = middle;
+            } else {
+                left = middle + 1;
+            }
+        }
+
+        // Once the left and right boundaries coincide, we find the target value,
+        // that is, the minimum workable eating speed.
+        return right;
+    }
+}
