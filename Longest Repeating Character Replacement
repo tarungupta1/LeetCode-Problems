@@ -66,9 +66,49 @@ class Solution {
 
 
 
-Time Complexity: O(N^2), where N is the length of the array
-Space Complexity: O(N), where N is the length of the array
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(26), where N is the length of the array
 
 
 APPROACH 2
-class MyCalendar {
+// Here, greedy approach is also being applied. If we have found a valid window, then we will try to find a window bigger than that, therefore discarding the smaller windows. Because we require longest window
+class Solution {
+    public int characterReplacement(String s, int k) {
+        
+        int n = s.length();
+        
+        // Stores the frequency of each character in the current window
+        int[] count = new int[26];
+        Arrays.fill(count, 0);
+        
+        // maximum frequency of a character in a window where the window was once valid
+        int maxFrequencyLength = 0;        
+        
+        int ans = 0;
+        int left = 0, right = 0;
+        while(right < n) {
+            
+            // Update the frequency of character
+            count[s.charAt(right) - 'A']++;
+            
+            // Update max frquency of character in the current window. It will be updated if the current window is valid. (It happens logically)
+            maxFrequencyLength = Math.max(maxFrequencyLength, count[s.charAt(right) - 'A']);
+            
+            // check whether the window is valid or not. If not valid, then shrink the window
+            int windowSize = right - left + 1;
+            if ((windowSize - maxFrequencyLength) > k) {
+                // Number of replacements are more than K
+                
+                // Decrementing the frequency of character as string is shrinking from left
+                count[s.charAt(left) - 'A']--;               
+                left++;
+            }
+            
+            // Update the maximum window. The value will only be updated when there will be a valid window
+            ans = Math.max(ans, (right - left + 1));
+            right++;
+        }
+        
+        return ans;
+    }
+}
