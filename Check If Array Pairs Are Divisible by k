@@ -1,0 +1,111 @@
+Problem Number: 1497
+Problem Name: Check If Array Pairs Are Divisible by k
+Link: https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/
+
+Question
+Given an array of integers arr of even length n and an integer k.
+We want to divide the array into exactly n / 2 pairs such that the sum of each pair is divisible by k.
+Return true If you can find a way to do that or false otherwise.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(K), where K is the divisor
+
+
+APPROACH 1
+class Solution {
+public:
+    bool canArrange(vector<int>& arr, int k) {
+        
+        // stores frequency
+        vector<int> count(k, 0);
+        
+        // stores frequenc of each value as remainder when dividing with 'k'
+        for(auto i : arr) {
+            int val = (((i % k) + k) % k);
+            count[val]++;
+        }
+        
+        //  If proper divisors are perfectly forming pairs
+        if (count[0] % 2 != 0) {
+            return false;
+        }
+        
+        // If k is even, then check if half number is perfectly forming pairs
+        if (k % 2 == 0) {
+            if (count[k/2] % 2 != 0) {
+                return false;
+            }
+        }
+        
+        // Checking whether other number are perfectly forming pairs
+        for(int i=1; i<=k/2; i++) {
+            
+            int val1 = count[i];
+            int val2 = count[k-i];
+            
+            if (val1 != val2) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
+
+
+
+Time Complexity: O(N*(logn(N))), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+APPROACH 2
+class Solution {
+public:
+    bool canArrange(vector<int>& arr, int k) {
+        
+        // stores remainder of the array
+        vector<int> remainder;
+        for(auto i : arr) {
+            int val = (((i % k) + k) % k);
+            remainder.push_back(val);
+        }
+        
+        sort(remainder.begin(), remainder.end());
+        
+        // checking for proper divisors are perfectly forming pairs
+        int count = 0;
+        for(int i : remainder) {
+            if (i == 0) {
+                count++;
+            }
+            else {
+                break;
+            }
+        } 
+               
+        if (count % 2 != 0) {
+            return false;
+        }
+        
+        
+        // Checking whether other number are perfectly forming pairs
+        int start = count, end = remainder.size()-1;
+        while(start <= end) {
+            
+            int val = (remainder[start] + remainder[end]) % k;
+            if (val != 0) {
+                return false;
+            }
+            
+            start++;
+            end--;
+        }
+        
+        return true;
+    }
+};
