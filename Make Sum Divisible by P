@@ -1,0 +1,72 @@
+Problem Number: 1590
+Problem Name: Make Sum Divisible by P
+Link: https://leetcode.com/problems/make-sum-divisible-by-p/
+
+Question
+Given an array of positive integers nums, remove the smallest subarray (possibly empty) such that the sum of the remaining elements is divisible by p. It is not allowed to remove the whole array.
+Return the length of the smallest subarray that you need to remove, or -1 if it's impossible.
+A subarray is defined as a contiguous block of elements in the array.          
+
+
+               
+Time Complexity: O(N), where N is the length of the array
+Space Complexity: O(N), where N is the length of the array
+
+
+Solution
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+        
+        int n = nums.size();
+        
+        // Total sum of the array
+        long long sum = 0;
+        for(auto i : nums) {
+            sum += i;
+        }
+        
+        // If sum is divisible by p, then return 0
+        if (sum % p == 0) {
+            return 0;
+        }
+        
+        // compute the remainder
+        int remainder = sum % p;
+        
+        // saves the last occurence of the prefixModuloSum index. We need to save the last occurrence as we need to find the shortest array to remove
+        unordered_map<int, int> mp;
+        
+        // when no array is deleted till yet
+        mp[0] = -1;
+        
+        // Stores the prefix module sum where divisor is p.
+        long long prefixModuloSum = 0;
+        
+        int ans = n;   // We can't use INT_MAX here as we want to have something remaining in the array
+        for(int i=0; i<nums.size(); i++) {
+            
+            prefixModuloSum = (prefixModuloSum + nums[i]) % p;
+            
+            // Compute modulo sum if removed from the array will make the remaining array divisible by p
+            // Derived from (((currentSum_j - currentSum_i) % p) == remainder), where currentSum_j is requiredModuleSum and currentSum_i is prefixModuloSum.
+            long requiredModuleSum = ((prefixModuloSum - remainder + p) % p);
+            
+            // If we are able to find the last occurence, then compute the value
+            if (mp.find(requiredModuleSum) != mp.end()) {
+                ans = min(ans, (i - mp[requiredModuleSum]));
+            }
+            
+            // update the last occurrence of the prfixModuloSum
+            mp[prefixModuloSum] = i;
+        }
+        
+        // If no subArray found to be deleted, this means array cannot be divisible by p. Therefore return -1
+        if (ans == n) {
+            return -1;
+        }
+        else {
+            return ans;
+        }
+    }
+};
