@@ -1,0 +1,81 @@
+Problem Number: 153
+Problem Name: Find Minimum in Rotated Sorted Array
+Link: https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+Question
+Suppose an array of length n sorted in ascending order is rotated between 1 and n times. For example, the array nums = [0,1,2,4,5,6,7] might become:
+    [4,5,6,7,0,1,2] if it was rotated 4 times.
+    [0,1,2,4,5,6,7] if it was rotated 7 times.
+Notice that rotating an array [a[0], a[1], a[2], ..., a[n-1]] 1 time results in the array [a[n-1], a[0], a[1], a[2], ..., a[n-2]].
+Given the sorted rotated array nums of unique elements, return the minimum element of this array.
+You must write an algorithm that runs in O(log n) time.
+ 
+           
+            
+Solution 
+
+
+Time Complexity: O(log(N)), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 1
+class Solution {
+    public int findMin(int[] nums) {
+
+        // initializing left and right pointers.
+        int left = 0, right = nums.length - 1;
+
+        // stores the minimum value
+        int minValue = Integer.MAX_VALUE;
+        
+        while (left <= right) {
+            // Find the mid element
+            int mid = left + (right - left) / 2;
+
+            // The lowest value can be either on left or right side. But we can shrink the searching window. We can update minValue with the value present at low position (as the values are sorted) and search the right side
+            if (nums[left] <= nums[mid]) {
+                minValue = Math.min(minValue, nums[left]);
+                left = mid + 1;
+            } 
+            // The lowest value will be to the left side
+            else {
+                minValue = Math.min(minValue, nums[mid]);
+                right = mid - 1;
+            }
+        }
+
+        return minValue;
+    }
+}
+
+
+
+Time Complexity: O(log(N)), where N is the length of the array
+Space Complexity: O(1)
+
+
+APPROACH 2
+class Solution {
+    public int findMin(int[] nums) {
+
+        // initializing left and right pointers.
+        int left = 0, right = nums.length - 1;
+
+        while (left < right) {
+            // Find the mid element
+            int mid = left + (right - left) / 2;
+
+            // The lowest value can be to the left side, We need to include mid as well in the search window
+            if (nums[mid] <= nums[right]) {
+                right = mid;
+            } 
+            // The lowest value will be to the right side
+            else {
+                left = mid + 1;
+            }
+        }
+
+        return nums[left];
+    }
+}
